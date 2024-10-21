@@ -1,15 +1,25 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import FeedItem from '../components/FeedItem';
+import { useState } from "react";
 
 const meta: Meta<typeof FeedItem> = {
     title: 'Components/FeedItem',
     component: FeedItem,
     tags: ['autodocs'],
     argTypes: {
-        colorA: { control: 'object' },
-        colorB: { control: 'object' },
-        stripeCount: { control: { type: 'number', min: 1, max: 100 } },
-        style: { control: 'radio', options: ['line', 'circle'] },
+        colorA: {
+            control: 'object',
+        },
+        colorB: {
+            control: 'object',
+        },
+        stripeCount: {
+            control: { type: 'range', min: 2, max: 50, step: 1 },
+        },
+        style: {
+            control: 'radio',
+            options: ['line', 'circle'],
+        },
     },
 };
 
@@ -18,9 +28,9 @@ type Story = StoryObj<typeof FeedItem>;
 
 export const Default: Story = {
     args: {
-        colorA: { h: 0, s: 100, b: 100 },
-        colorB: { h: 240, s: 100, b: 100 },
-        stripeCount: 10,
+        colorA: { h: 100, s: 90, b: 100 },
+        colorB: { h: 250, s: 80, b: 20 },
+        stripeCount: 12,
         style: 'line',
     },
 };
@@ -32,17 +42,25 @@ export const CircleStyle: Story = {
     },
 };
 
-export const MoreStripes: Story = {
-    args: {
-        ...Default.args,
-        stripeCount: 50,
-    },
-};
+export const WithInteractiveControls: Story = {
+    render: (args) => {
+        const [colorA, setColorA] = useState(args.colorA);
+        const [colorB, setColorB] = useState(args.colorB);
+        const [stripeCount, setStripeCount] = useState(args.stripeCount);
+        const [style, setStyle] = useState(args.style);
 
-export const PastelColors: Story = {
-    args: {
-        ...Default.args,
-        colorA: { h: 60, s: 50, b: 100 },
-        colorB: { h: 180, s: 50, b: 100 },
+        return (
+            <FeedItem
+                colorA={colorA}
+                colorB={colorB}
+                stripeCount={stripeCount}
+                style={style}
+                onColorAChange={setColorA}
+                onColorBChange={setColorB}
+                onStripeCountChange={setStripeCount}
+                onStyleChange={setStyle}
+            />
+        );
     },
+    args: Default.args,
 };
