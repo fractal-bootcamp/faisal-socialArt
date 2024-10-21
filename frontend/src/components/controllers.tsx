@@ -60,7 +60,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="360"
                                     value={colorA.h}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorAChange({ ...colorA, h: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(360, value));
+                                        onColorAChange({ ...colorA, h: valueSafety });
+                                    }}
                                     placeholder="Hue"
                                 />
                                 <Input
@@ -69,7 +73,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="100"
                                     value={colorA.s}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorAChange({ ...colorA, s: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(100, value));
+                                        onColorAChange({ ...colorA, s: valueSafety });
+                                    }}
                                     placeholder="Saturation"
                                 />
                                 <Input
@@ -78,7 +86,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="100"
                                     value={colorA.b}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorAChange({ ...colorA, b: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(100, value));
+                                        onColorAChange({ ...colorA, b: valueSafety });
+                                    }}
                                     placeholder="Brightness"
                                 />
                             </div>
@@ -92,7 +104,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="360"
                                     value={colorB.h}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorBChange({ ...colorB, h: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(360, value));
+                                        onColorBChange({ ...colorB, h: valueSafety });
+                                    }}
                                     placeholder="Hue"
                                 />
                                 <Input
@@ -101,7 +117,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="100"
                                     value={colorB.s}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorBChange({ ...colorB, s: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(100, value));
+                                        onColorBChange({ ...colorB, s: valueSafety });
+                                    }}
                                     placeholder="Saturation"
                                 />
                                 <Input
@@ -110,7 +130,11 @@ const Controllers: React.FC<ControllersProps> = ({
                                     min="0"
                                     max="100"
                                     value={colorB.b}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => onColorBChange({ ...colorB, b: parseInt(e.target.value) })}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const value = parseInt(e.target.value);
+                                        const valueSafety = Math.max(0, Math.min(100, value));
+                                        onColorBChange({ ...colorB, b: valueSafety });
+                                    }}
                                     placeholder="Brightness"
                                 />
                             </div>
