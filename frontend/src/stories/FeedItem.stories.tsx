@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import FeedItem from '../components/FeedItem';
+import FeedItem from '../components/ArtEditor';
 import { useState } from "react";
 
 const meta: Meta<typeof FeedItem> = {
