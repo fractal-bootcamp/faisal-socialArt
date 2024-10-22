@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ArtType, generateRandomArt } from '@/services/artService';
 import ArtEditor from './ArtEditor';
 import FeedPost from './FeedPost';
+import { Toaster, toast } from 'sonner';
 
 interface FeedProps {
     initialItems?: ArtType[];
@@ -30,26 +31,33 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
         };
         setFeedItems(prevItems => [newFeedItem, ...prevItems]);
         setEditingArt(null);
+        toast.success('Art published successfully!');
     };
 
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
         setEditingArt(newArt);
+        //toast.success('New art generated!');
     };
 
     const handleDelete = (artId: string) => {
         setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
+        toast.success('Art deleted successfully!');
     };
     const handleEdit = (updatedArt: ArtType) => {
         setFeedItems(prevItems => prevItems.map(item =>
             item.id === updatedArt.id ? { ...item, ...updatedArt } : item
         ));
+        toast.success('Art updated successfully!');
     };
 
     return (
         <div className="feed-container min-h-screen flex flex-col items-center overflow-y-auto px-4 py-6">
+            <Toaster />
             <div className="w-full max-w-md mb-6">
-                <Button onClick={handleAddNewItem} className="w-full">Generate New Art</Button>
+                <Button onClick={handleAddNewItem} className="w-full">
+                    Generate New Art
+                </Button>
             </div>
             <div className="w-full max-w-md space-y-6">
                 {editingArt && (
@@ -58,6 +66,7 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
                         publishArt={handlePublishArt}
                         onClose={() => setEditingArt(null)}
                         userAvatar="https://github.com/shadcn.png"
+                        isEditing={false}
                         userName="Michael Scott"
                     />
                 )}

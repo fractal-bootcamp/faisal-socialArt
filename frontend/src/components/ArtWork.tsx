@@ -5,6 +5,7 @@ import { drawLineStyle, drawCircleStyle, drawLabels } from '../services/p5ColorI
 
 interface ArtWorkProps {
     art: ArtWork;
+    isEditing: boolean;
 }
 
 const ArtWork: React.FC<ArtWorkProps> = ({ art }) => {

@@ -10,6 +10,7 @@ interface ArtEditorProps {
     onClose: () => void;
     userAvatar: string;
     userName: string;
+    isEditing: boolean;
 }
 
 const ArtEditor: React.FC<ArtEditorProps> = ({
@@ -18,6 +19,7 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
     onClose,
     userAvatar,
     userName,
+    isEditing,
 }) => {
     const [art, setArt] = useState(initialArt);
 
@@ -38,9 +40,13 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                 <div className="flex items-center mb-4">
                     <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={userAvatar} alt={userName} />
-                        <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>
+                            {userName.charAt(0)}
+                        </AvatarFallback>
                     </Avatar>
-                    <span className="font-semibold text-lg">{userName}</span>
+                    <span className="font-semibold text-lg">
+                        {userName}
+                    </span>
                 </div>
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="w-full md:w-1/2 p-4">
@@ -49,10 +55,11 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                             setArt={setArt}
                             initialArt={initialArt}
                             handlePublish={handlePublish}
+                            isEditing={isEditing}
                         />
                     </div>
                     <div className="w-full md:w-1/2 p-4">
-                        <ArtWork art={art} />
+                        <ArtWork art={art} isEditing={isEditing} />
                     </div>
                 </div>
             </div>
