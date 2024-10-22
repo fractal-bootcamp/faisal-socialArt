@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Feed from '../components/Feed';
+import Feed from '../components/art-components/Feed';
 import { ArtType, generateRandomArt } from '@/services/artService';
 
 const meta: Meta<typeof Feed> = {

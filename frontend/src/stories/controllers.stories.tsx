@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import Controllers from '@/components/Controllers';
+import Controllers from '@/components/art-components/Controllers';
 import { useState } from "react";
 import { ArtWork, generateRandomArt } from '@/services/artService';
 

@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import FeedPost from '../components/FeedPost';
+import FeedPost from '../components/art-components/FeedPost';
 import { ArtType } from '@/services/artService';
 const meta: Meta<typeof FeedPost> = {
     title: 'Components/FeedPost',

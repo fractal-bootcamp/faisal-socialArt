@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import ArtEditor from '../components/ArtEditor';
+import ArtEditor from '../components/art-components/ArtEditor';
 import { ArtWork } from '@/services/artService';
 
 const meta: Meta<typeof ArtEditor> = {
