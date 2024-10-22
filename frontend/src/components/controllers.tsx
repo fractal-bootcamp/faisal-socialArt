@@ -1,52 +1,52 @@
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import "../index.css"
-
-type Style = "line" | "circle"
+import { ArtStyle, ArtWork, updateColor } from "@/services/artService";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
+import { Label } from "./ui/label";
+import { Input } from "./ui/input";
+import { Slider } from "./ui/slider";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
+import { Button } from "./ui/button";
 
 interface ControllersProps {
-    colorA: { h: number; s: number; b: number };
-    colorB: { h: number; s: number; b: number };
-    stripeCount: number;
-    style: Style;
-    onColorAChange: (color: { h: number; s: number; b: number }) => void;
-    onColorBChange: (color: { h: number; s: number; b: number }) => void;
-    onStripeCountChange: (count: number) => void;
-    onStyleChange: (style: Style) => void;
+    art: ArtWork;
+    setArt: (art: ArtWork) => void;
+    initialArt: ArtWork;
+    handlePublish: () => void;
 }
 
 const Controllers: React.FC<ControllersProps> = ({
-    colorA,
-    colorB,
-    stripeCount,
-    style,
-    onColorAChange,
-    onColorBChange,
-    onStripeCountChange,
-    onStyleChange
+    art,
+    setArt,
+    initialArt,
+    handlePublish,
 }) => {
+    const { colorA, colorB, stripeCount, style } = art
+
+    const onColorAChange = (colorA: { h: number; s: number; b: number }) => {
+        setArt(updateColor(art, "colorA", colorA));
+    }
+
+    const onColorBChange = (colorB: { h: number; s: number; b: number }) => {
+        setArt(updateColor(art, "colorB", colorB));
+    }
+
+    const onStripeCountChange = (stripeCount: number) => {
+        setArt({ ...art, stripeCount });
+    }
+
+    const onStyleChange = (style: ArtStyle) => {
+        setArt({ ...art, style });
+    }
+
+    const handleClear = () => {
+        setArt(initialArt);
+    }
+
+    // 1. render a controller using art
     return (
         <Card className="w-[350px]">
             <CardHeader>
                 <CardTitle>Art Controllers</CardTitle>
-                <CardDescription>Customize your art using HSB color model.</CardDescription>
+                <CardDescription>Customize your art.</CardDescription>
             </CardHeader>
             <CardContent>
                 <form>
@@ -61,9 +61,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="360"
                                     value={colorA.h}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(360, value));
-                                        onColorAChange({ ...colorA, h: valueSafety });
+                                        onColorAChange({ ...colorA, h: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Hue"
                                 />
@@ -74,9 +72,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="100"
                                     value={colorA.s}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(100, value));
-                                        onColorAChange({ ...colorA, s: valueSafety });
+                                        onColorAChange({ ...colorA, s: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Saturation"
                                 />
@@ -87,9 +83,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="100"
                                     value={colorA.b}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(100, value));
-                                        onColorAChange({ ...colorA, b: valueSafety });
+                                        onColorAChange({ ...colorA, b: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Brightness"
                                 />
@@ -105,9 +99,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="360"
                                     value={colorB.h}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(360, value));
-                                        onColorBChange({ ...colorB, h: valueSafety });
+                                        onColorBChange({ ...colorB, h: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Hue"
                                 />
@@ -118,9 +110,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="100"
                                     value={colorB.s}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(100, value));
-                                        onColorBChange({ ...colorB, s: valueSafety });
+                                        onColorBChange({ ...colorB, s: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Saturation"
                                 />
@@ -131,9 +121,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     max="100"
                                     value={colorB.b}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                        const value = parseInt(e.target.value);
-                                        const valueSafety = Math.max(0, Math.min(100, value));
-                                        onColorBChange({ ...colorB, b: valueSafety });
+                                        onColorBChange({ ...colorB, b: Math.floor(parseFloat(e.target.value)) });
                                     }}
                                     placeholder="Brightness"
                                 />
@@ -147,13 +135,13 @@ const Controllers: React.FC<ControllersProps> = ({
                                 max={50}
                                 step={1}
                                 value={[stripeCount]}
-                                onValueChange={(value: number[]) => onStripeCountChange(value[0])}
+                                onValueChange={(value: number[]) => onStripeCountChange(Math.floor(value[0]))}
                             />
                             <div className="text-center">{stripeCount}</div>
                         </div>
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="style">Style</Label>
-                            <Select value={style} onValueChange={(value) => onStyleChange(value as Style)}>
+                            <Select value={style} onValueChange={(value) => onStyleChange(value as ArtStyle)}>
                                 <SelectTrigger id="style">
                                     <SelectValue placeholder="Select style" />
                                 </SelectTrigger>
@@ -167,11 +155,11 @@ const Controllers: React.FC<ControllersProps> = ({
                 </form>
             </CardContent>
             <CardFooter className="flex justify-between">
-                <Button variant="outline">Clear</Button>
-                <Button>Generate</Button>
+                <Button variant="outline" onClick={handleClear}>Reset</Button>
+                <Button onClick={() => handlePublish()}>Publish</Button>
             </CardFooter>
         </Card>
     )
 }
 
-export default Controllers
+export default Controllers;
