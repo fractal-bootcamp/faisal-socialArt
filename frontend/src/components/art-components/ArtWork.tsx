@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import p5 from 'p5';
 import type { ArtWork } from '@/services/artService';
-import { drawLineStyle, drawCircleStyle, drawLabels } from '../services/p5ColorInterpolation';
+import { drawLineStyle, drawCircleStyle, drawLabels } from '../../services/p5ColorInterpolation';
 
 interface ArtWorkProps {
     art: ArtWork;

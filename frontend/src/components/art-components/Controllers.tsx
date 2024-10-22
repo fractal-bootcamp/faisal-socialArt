@@ -1,10 +1,10 @@
 import { ArtStyle, ArtWork, updateColor } from "@/services/artService";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "./ui/card";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Slider } from "./ui/slider";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "./ui/select";
-import { Button } from "./ui/button";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card";
+import { Label } from "../ui/label";
+import { Input } from "../ui/input";
+import { Slider } from "../ui/slider";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
+import { Button } from "../ui/button";
 
 interface ControllersProps {
     art: ArtWork;
