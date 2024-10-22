@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import MiniArtEditor from '../components/MiniArtEditor';
+import MiniArtEditor from '../components/art-components/MiniArtEditor';
 import { ArtType } from '@/services/artService';
 
 const meta: Meta<typeof MiniArtEditor> = {
