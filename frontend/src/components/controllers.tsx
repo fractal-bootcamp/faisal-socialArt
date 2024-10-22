@@ -52,7 +52,7 @@ const Controllers: React.FC<ControllersProps> = ({
                 <form>
                     <div className="grid w-full items-center gap-4">
                         <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="colorA">Color A (Top)</Label>
+                            <Label htmlFor="colorA">Color A</Label>
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorA-hue"
@@ -90,7 +90,7 @@ const Controllers: React.FC<ControllersProps> = ({
                             </div>
                         </div>
                         <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="colorB">Color B (Bottom)</Label>
+                            <Label htmlFor="colorB">Color B</Label>
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorB-hue"
