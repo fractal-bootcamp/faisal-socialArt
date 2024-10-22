@@ -10,10 +10,11 @@ const meta: Meta<typeof ArtEditor> = {
     },
     tags: ['autodocs'],
     argTypes: {
-        initialArt: {
-            control: 'object',
-        },
+        initialArt: { control: 'object' },
         publishArt: { action: 'published' },
+        onClose: { action: 'closed' },
+        userAvatar: { control: 'text' },
+        userName: { control: 'text' },
     },
 };
 
@@ -21,7 +22,9 @@ export default meta;
 type Story = StoryObj<typeof ArtEditor>;
 
 const defaultArt: ArtWork = {
-    id: '', // Add an empty string as the default id
+    id: '1',
+    userName: '',
+    isAuthor: false,
     colorA: { h: 0, s: 100, b: 100 },
     colorB: { h: 240, s: 100, b: 100 },
     stripeCount: 5,
@@ -31,17 +34,15 @@ const defaultArt: ArtWork = {
 export const Default: Story = {
     args: {
         initialArt: defaultArt,
+        userAvatar: 'https://github.com/shadcn.png',
+        userName: 'Michael Scott',
     },
 };
 
 export const CircleStyle: Story = {
     args: {
         initialArt: { ...defaultArt, style: 'circle' },
-    },
-};
-
-export const ManyStripes: Story = {
-    args: {
-        initialArt: { ...defaultArt, stripeCount: 20 },
+        userAvatar: '',
+        userName: 'Dwight Schrute',
     },
 };

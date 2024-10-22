@@ -41,7 +41,7 @@ const ArtWork: React.FC<ArtWorkProps> = ({ art }) => {
         }
     }, [art]);
 
-    return <div ref={sketchRef} className="border border-gray-200 rounded-lg overflow-hidden"></div>;
+    return (<div ref={sketchRef}></div>);
 };
 
 export default ArtWork;

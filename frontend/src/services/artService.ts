@@ -17,6 +17,8 @@ export type ArtType = ArtWork;
 
 export interface ArtWork {
     id: string;
+    userName: string;
+    isAuthor: boolean;
     colorA: { h: number; s: number; b: number };
     colorB: { h: number; s: number; b: number };
     stripeCount: number;
@@ -43,9 +45,12 @@ export function updateFeed(art: ArtWork, artFeed: ArtFeed): ArtFeed {
         return [art, ...artFeed];
     }
 }
+
 export function generateRandomArt(): ArtWork {
     return {
         id: uuidv4(),
+        userName: "", // Adding userName
+        isAuthor: false, // Adding isAuthor
         colorA: {
             h: Math.floor(Math.random() * 361),
             s: Math.floor(Math.random() * 101),

@@ -1,20 +1,37 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Feed from '../components/Feed';
+import { ArtType, generateRandomArt } from '@/services/artService';
 
 const meta: Meta<typeof Feed> = {
     title: 'Components/Feed',
     component: Feed,
+    parameters: {
+        layout: 'centered',
+    },
     tags: ['autodocs'],
+    argTypes: {
+        initialItems: {
+            control: 'object',
+            description: 'Array of initial feed items',
+        },
+    },
 };
 
 export default meta;
 type Story = StoryObj<typeof Feed>;
 
-const generateRandomFeedItem = () => ({
-    colorA: { h: Math.random() * 360, s: Math.random() * 100, b: Math.random() * 100 },
-    colorB: { h: Math.random() * 360, s: Math.random() * 100, b: Math.random() * 100 },
-    stripeCount: Math.floor(Math.random() * 49) + 2,
-    style: Math.random() < 0.5 ? "line" : "circle" as "line" | "circle"
+interface FeedItem extends ArtType {
+    userName: string;
+    userAvatar: string;
+    isAuthor: boolean;
+}
+
+const generateRandomFeedItem = (id: string, userName: string, userAvatar: string, isAuthor: boolean): FeedItem => ({
+    ...generateRandomArt(),
+    id,
+    userName,
+    userAvatar,
+    isAuthor,
 });
 
 export const EmptyFeed: Story = {
@@ -26,21 +43,9 @@ export const EmptyFeed: Story = {
 export const FeedWithThreeItems: Story = {
     args: {
         initialItems: [
-            generateRandomFeedItem(),
-            generateRandomFeedItem(),
-            generateRandomFeedItem(),
+            generateRandomFeedItem('1', 'Michael Scott', 'https://github.com/shadcn.png', true),
+            generateRandomFeedItem('2', 'Dwight Schrute', '', false),
+            generateRandomFeedItem('3', 'Jim Halpert', '', false),
         ],
-    },
-};
-
-export const InteractiveFeed: Story = {
-    render: () => {
-        return (
-            <Feed initialItems={[
-                generateRandomFeedItem(),
-                generateRandomFeedItem(),
-                generateRandomFeedItem(),
-            ]} />
-        );
     },
 };
