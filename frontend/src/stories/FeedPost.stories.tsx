@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import FeedPost from '../components/FeedPost';
 import { ArtType } from '@/services/artService';
-
 const meta: Meta<typeof FeedPost> = {
     title: 'Components/FeedPost',
     component: FeedPost,
@@ -17,6 +16,7 @@ const meta: Meta<typeof FeedPost> = {
         onLike: { action: 'liked' },
         onEdit: { action: 'edited' },
         onDelete: { action: 'deleted' },
+        isEditing: { control: 'boolean' },
     },
 };
 
@@ -47,6 +47,7 @@ export const AsAuthorAndNoAvatar: Story = {
         ...Default.args,
         userAvatar: '',
         isAuthor: true,
+        isEditing: true,
     },
 };
 
@@ -57,4 +58,4 @@ export const DefaultAndNoAvatar: Story = {
         userName: "Dwight Schrute",
         art: { ...sampleArt, style: 'circle' },
     },
-};
+};  

@@ -5,6 +5,17 @@ import ArtEditor from './ArtEditor';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, Edit, Trash2 } from 'lucide-react';
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 interface FeedPostProps {
     art: ArtType;
@@ -14,6 +25,7 @@ interface FeedPostProps {
     onLike: () => void;
     onEdit: (updatedArt: ArtType) => void;
     onDelete: () => void;
+    isEditing?: boolean;
 }
 
 const FeedPost: React.FC<FeedPostProps> = ({
@@ -23,13 +35,12 @@ const FeedPost: React.FC<FeedPostProps> = ({
     isAuthor,
     onLike,
     onEdit,
-    onDelete
-}) => {
-    const [isEditing, setIsEditing] = useState(false);
+    onDelete }) => {
+    const [isEditingState, setIsEditingState] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
 
     const handleEdit = () => {
-        setIsEditing(true);
+        setIsEditingState(true);
     };
 
     const [likesCount, setLikesCount] = useState(0);
@@ -44,7 +55,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
     const handlePublish = (updatedArt: ArtType) => {
         setCurrentArt(updatedArt);
         onEdit(updatedArt);
-        setIsEditing(false);
+        setIsEditingState(false);
     };
 
     return (
@@ -53,12 +64,16 @@ const FeedPost: React.FC<FeedPostProps> = ({
                 <div className="flex items-center mb-3 sm:mb-4">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 mr-2 sm:mr-3">
                         <AvatarImage src={userAvatar} alt={userName} />
-                        <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                        <AvatarFallback>
+                            {userName.charAt(0)}
+                        </AvatarFallback>
                     </Avatar>
-                    <span className="font-semibold text-base sm:text-lg">{userName}</span>
+                    <span className="font-semibold text-base sm:text-lg">
+                        {userName}
+                    </span>
                 </div>
                 <div className="mb-3 sm:mb-4">
-                    <ArtWork art={currentArt} />
+                    <ArtWork art={currentArt} isEditing={isEditingState} />
                 </div>
                 <div className="flex justify-between items-center">
                     <div className="flex items-center">
@@ -70,27 +85,52 @@ const FeedPost: React.FC<FeedPostProps> = ({
                         >
                             <Heart className="h-6 w-6 sm:h-8 sm:w-8" fill={isLiked ? "currentColor" : "none"} />
                         </Button>
-                        <span className="ml-1 sm:ml-2 text-sm sm:text-base text-gray-500">{likesCount}</span>
+                        <span className="ml-1 sm:ml-2 text-sm sm:text-base text-gray-500">
+                            {likesCount}
+                        </span>
                     </div>
                     {isAuthor && (
                         <div className="flex">
                             <Button variant="ghost" size="sm" onClick={handleEdit} className="p-1 sm:p-2">
                                 <Edit className="h-6 w-6 sm:h-8 sm:w-8" />
                             </Button>
-                            <Button variant="ghost" size="sm" onClick={onDelete} className="p-1 sm:p-2">
-                                <Trash2 className="h-6 w-6 sm:h-8 sm:w-8" />
-                            </Button>
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="ghost" size="sm" className="p-1 sm:p-2">
+                                        <Trash2 className="h-6 w-6 sm:h-8 sm:w-8" />
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                            Are you sure you want to delete this artwork?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete your artwork.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                            Cancel
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction onClick={onDelete}>
+                                            Delete
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
                         </div>
                     )}
                 </div>
             </div>
-            {isEditing && (
+            {isEditingState && (
                 <ArtEditor
                     userAvatar={userAvatar}
                     userName={userName}
                     initialArt={currentArt}
                     publishArt={handlePublish}
-                    onClose={() => setIsEditing(false)}
+                    onClose={() => setIsEditingState(false)}
+                    isEditing={isEditingState}
                 />
             )}
         </div>
