@@ -33,6 +33,7 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
                         initialItems={userArts}
                         userName={userName ?? ''}
                         userAvatar={userAvatar ?? ''}
+                        isProfilePage={true}
                     />
                 </div>
             </main>

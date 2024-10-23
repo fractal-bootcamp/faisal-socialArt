@@ -19,7 +19,7 @@ import {
 import { toast } from 'sonner';
 
 interface FeedPostProps {
-    art: ArtType;
+    art: ArtType & { likeCount?: number };
     userAvatar: string;
     userName: string;
     isAuthor: boolean;
@@ -49,7 +49,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
         setIsEditingState(true);
     };
 
-    const [likesCount, setLikesCount] = useState(0);
+    const [likesCount, setLikesCount] = useState(art.likeCount || 0);
     const [currentArt, setCurrentArt] = useState(art);
 
     const handleLike = () => {
@@ -78,11 +78,51 @@ const FeedPost: React.FC<FeedPostProps> = ({
                     <ArtWork art={currentArt} isEditing={false} />
                 </div>
                 {/* Hover overlay with exact width */}
-                <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full">
+                <div className="absolute rounded-lg inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 w-full">
                     <Button variant="ghost" className="text-white bg-gray-400" onClick={() => setIsEditingState(true)}>
-                        View
+                        Edit
                     </Button>
                 </div>
+                {/* Like count at bottom left */}
+                {likesCount > 0 && (
+                    <div className="absolute bottom-2 left-2 flex items-center">
+                        <Heart className="h-4 w-4 text-red-500 mr-1" fill={likesCount > 0 ? "currentColor" : "none"} />
+                        <span className="text-sm text-white">{likesCount}</span>
+                    </div>
+                )}
+                {/* Delete button at bottom right */}
+                {isAuthor && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="sm" className="absolute bottom-2 right-2 p-1">
+                                <Trash2 className="h-4 w-4 text-white" />
+                            </Button>
+                        </AlertDialogTrigger>
+
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                    Are you sure?
+                                </AlertDialogTitle>
+
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete your artwork.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+
+                            <AlertDialogFooter>
+                                <AlertDialogCancel>
+                                    Cancel
+                                </AlertDialogCancel>
+
+                                <AlertDialogAction onClick={onDelete}>
+                                    Delete
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
+
                 {isEditingState && (
                     <ArtEditor
                         initialArt={currentArt}

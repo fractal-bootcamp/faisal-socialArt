@@ -29,7 +29,8 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        // Add a fixed overlay with a high z-index
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg relative w-full max-w-4xl mx-4">
                 <button
                     className="absolute top-2 right-2 w-8 h-8 flex items-center justify-center hover:bg-gray-200 rounded-full text-gray-500 hover:text-gray-700"
