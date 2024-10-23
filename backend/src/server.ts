@@ -1,7 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-import { ArtWork } from '../frontend/src/services/artService';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -21,54 +20,71 @@ app.get('/api/art-feed', async (_req: Request, res: Response) => {
         const artFeed = await prisma.artWork.findMany({
             orderBy: { createdAt: 'desc' }
         });
-        res.json(artFeed);
+        res.status(200)
+            .json({ message: 'Fetching art feed...', data: artFeed });
     } catch (error) {
         console.error('Error fetching art feed:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500)
+            .json({ error: 'Internal server error.' });
     }
 });
 
 app.get('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const artPiece = await prisma.artWork.findUnique({
+        const artWork = await prisma.artWork.findUnique({
             where: { id }
         });
-        if (!artPiece) {
-            return res.status(404).json({ error: 'Art piece not found' });
+        if (!artWork) {
+            return res.status(404).json({ error: 'Art work not found.' });
         }
-        res.json(artPiece);
+        res.status(200)
+            .json({ message: 'Fetching art work...', data: artWork });
     } catch (error) {
-        console.error('Error fetching art piece:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error fetching art work:', error);
+        res.status(500)
+            .json({ error: 'Internal server error.' });
     }
 });
 
 app.post('/api/art-feed', async (req: Request, res: Response) => {
     try {
-        const artData: ArtWork = req.body;
-        const newArtPiece = await prisma.artWork.create({
-            data: artData
+        const artData = req.body;
+        // Convert the incoming data to match the Prisma schema
+        const prismaArtData = {
+            configuration: artData,
+            authorId: artData.authorId // Assuming the authorId is provided in the request
+        };
+        const newArtWork = await prisma.artWork.create({
+            data: prismaArtData
         });
-        res.status(201).json(newArtPiece);
+        res.status(201)
+            .json({ message: 'Created art work...', data: newArtWork });
     } catch (error) {
-        console.error('Error creating art piece:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error creating art work:', error);
+        res.status(500)
+            .json({ error: 'Internal server error.' });
     }
 });
 
 app.put('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const artData: Partial<ArtWork> = req.body;
-        const updatedArtPiece = await prisma.artWork.update({
+        const artData = req.body;
+        // Convert the incoming data to match the Prisma schema
+        const prismaArtData = {
+            configuration: artData
+        };
+        const updatedArtWork = await prisma.artWork.update({
             where: { id },
-            data: artData
+            data: prismaArtData
         });
-        res.json(updatedArtPiece);
+        res.status(200)
+            .json({ message: 'Updated art work...', data: updatedArtWork });
     } catch (error) {
-        console.error('Error updating art piece:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error updating art work:', error);
+        res.status(500)
+            .json({ error: 'Internal server error' });
     }
 });
 
@@ -78,10 +94,12 @@ app.delete('/api/art-feed/:id', async (req: Request, res: Response) => {
         await prisma.artWork.delete({
             where: { id }
         });
-        res.status(204).send();
+        res.status(200)
+            .json({ message: 'Deleted art work...' });
     } catch (error) {
-        console.error('Error deleting art piece:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        console.error('Error deleting art work:', error);
+        res.status(500)
+            .json({ error: 'Internal server error' });
     }
 });
 
