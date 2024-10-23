@@ -24,6 +24,7 @@ interface FeedItem extends ArtType {
     userName: string;
     userAvatar: string;
     isAuthor: boolean;
+    displayAsGrid?: boolean;
 }
 
 const generateRandomFeedItem = (id: string, userName: string, userAvatar: string, isAuthor: boolean): FeedItem => ({
@@ -32,6 +33,7 @@ const generateRandomFeedItem = (id: string, userName: string, userAvatar: string
     userName,
     userAvatar,
     isAuthor,
+    displayAsGrid: false,
 });
 
 export const EmptyFeed: Story = {

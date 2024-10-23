@@ -14,7 +14,6 @@ const meta: Meta<typeof FeedPage> = {
         initialItems: { control: 'object' },
         userName: { control: 'text' },
         userAvatar: { control: 'text' },
-        sidebarDefaultOpen: { control: 'boolean' },
     },
     // Wrap the component in BrowserRouter
     decorators: [
@@ -41,8 +40,6 @@ export const Default: Story = {
         initialItems: generateRandomFeedItems(5),
         userName: "Michael Scott",
         userAvatar: "https://github.com/shadcn.png",
-        companyName: "Jammin' Art",
-        sidebarDefaultOpen: true,
     },
 };
 
@@ -51,7 +48,5 @@ export const EmptyFeed: Story = {
         initialItems: [],
         userName: "Dwight Schrute",
         userAvatar: "",
-        companyName: "Schrute Farms",
-        sidebarDefaultOpen: true,
     },
 };

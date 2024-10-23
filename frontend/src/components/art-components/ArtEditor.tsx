@@ -37,6 +37,7 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                 >
                     &#x2715; {/* X symbol */}
                 </button>
+
                 <div className="flex items-center mb-4">
                     <Avatar className="h-10 w-10 mr-3">
                         <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
@@ -44,10 +45,12 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                             {userName.charAt(0)}
                         </AvatarFallback>
                     </Avatar>
+
                     <span className="font-semibold text-lg">
                         {userName}
                     </span>
                 </div>
+
                 <div className="flex flex-col md:flex-row items-center gap-4">
                     <div className="w-full md:w-1/2 p-4">
                         <Controllers
@@ -58,6 +61,7 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                             isEditing={isEditing}
                         />
                     </div>
+
                     <div className="w-full md:w-1/2 p-4">
                         <ArtWork art={art} isEditing={isEditing} />
                     </div>

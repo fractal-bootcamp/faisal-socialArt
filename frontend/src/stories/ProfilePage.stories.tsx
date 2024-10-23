@@ -14,8 +14,6 @@ const meta: Meta<typeof ProfilePage> = {
         userArts: { control: 'object' },
         userName: { control: 'text' },
         userAvatar: { control: 'text' },
-        companyName: { control: 'text' },
-        sidebarDefaultOpen: { control: 'boolean' },
     },
     // Wrap the component in BrowserRouter with a proper route
     decorators: [
@@ -46,8 +44,6 @@ export const Default: Story = {
         userArts: generateRandomUserArts(6),
         userName: "Michael Scott",
         userAvatar: "https://github.com/shadcn.png",
-        companyName: "Jammin' Art",
-        sidebarDefaultOpen: true,
     },
 };
 
@@ -57,7 +53,5 @@ export const EmptyGallery: Story = {
         userArts: [],
         userName: "Dwight Schrute",
         userAvatar: "",
-        companyName: "Schrute Farms",
-        sidebarDefaultOpen: true,
     },
 };

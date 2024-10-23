@@ -106,6 +106,35 @@ app.delete('/api/art-feed/:id', async (req: Request, res: Response) => {
     }
 });
 
+// New route to get user profile and their artwork
+app.get('/api/profile/:userName', async (req: Request, res: Response) => {
+    try {
+        const { userName } = req.params;
+        // Fetch user profile and their artwork
+        const userProfile = await prisma.user.findUnique({
+            where: { username: userName },
+            include: {
+                artWorks: {
+                    orderBy: { createdAt: 'desc' }
+                }
+            }
+        });
+
+        if (!userProfile) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Remove sensitive information like password before sending the response
+        const { password, ...safeUserProfile } = userProfile;
+
+        console.log({ message: 'Fetching user profile and artwork...', data: safeUserProfile });
+        res.status(200).json(safeUserProfile);
+    } catch (error) {
+        console.error('Error fetching user profile and artwork:', error);
+        res.status(500).json({ error: 'Internal server error.' });
+    }
+});
+
 // Start the server
 app.listen(port, () => {
     console.log(`Server is running on port: http://localhost:${port}`);

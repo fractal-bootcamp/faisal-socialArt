@@ -26,8 +26,6 @@ const App: React.FC = () => {
             element={<FeedPage
               userName={userName}
               userAvatar={userAvatar}
-              companyName={companyName}
-              sidebarDefaultOpen={true}
             />}
           />
           {/* Profile Page route */}
@@ -36,8 +34,6 @@ const App: React.FC = () => {
             element={<ProfilePage
               userName={userName}
               userAvatar={userAvatar}
-              companyName={companyName}
-              sidebarDefaultOpen={true}
               userArts={[]}
             />}
           />
