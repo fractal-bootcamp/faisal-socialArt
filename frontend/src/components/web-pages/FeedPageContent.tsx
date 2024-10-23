@@ -11,6 +11,9 @@ interface FeedPageContentProps {
 const FeedPageContent: React.FC<FeedPageContentProps> = ({ initialItems = [], userName, userAvatar }) => {
     return (
         <div className="flex-grow overflow-y-auto p-6">
+            <h2 className="text-2xl font-bold mb-4 text-center">
+                Art Feed
+            </h2>
             <Feed
                 initialItems={initialItems}
                 userName={userName}

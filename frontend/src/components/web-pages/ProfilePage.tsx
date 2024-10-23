@@ -9,8 +9,8 @@ interface ProfilePageProps {
     userArts: ArtType[];
     userName: string;
     userAvatar: string;
-    companyName?: string;
-    sidebarDefaultOpen?: boolean;
+    companyName: string;
+    sidebarDefaultOpen: boolean;
 }
 
 const ProfilePage: React.FC<ProfilePageProps> = ({

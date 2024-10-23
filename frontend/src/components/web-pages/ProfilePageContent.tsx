@@ -6,8 +6,8 @@ import Feed from '../art-components/Feed';
 
 interface ProfilePageContentProps {
     userArts?: ArtFeed;
-    userName?: string;
-    userAvatar?: string;
+    userName: string;
+    userAvatar: string;
 }
 
 const ProfilePageContent: React.FC<ProfilePageContentProps> = ({

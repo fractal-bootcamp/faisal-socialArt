@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ProfilePage from '../components/web-pages/ProfilePage';
 import { ArtType, generateRandomArt } from '@/services/artService';
 
@@ -16,11 +17,22 @@ const meta: Meta<typeof ProfilePage> = {
         companyName: { control: 'text' },
         sidebarDefaultOpen: { control: 'boolean' },
     },
+    // Wrap the component in BrowserRouter with a proper route
+    decorators: [
+        (Story) => (
+            <BrowserRouter>
+                <Routes>
+                    <Route path="*" element={<Story />} />
+                </Routes>
+            </BrowserRouter>
+        ),
+    ],
 };
 
 export default meta;
 type Story = StoryObj<typeof ProfilePage>;
 
+// Function to generate random user arts
 const generateRandomUserArts = (count: number): ArtType[] => {
     return Array.from({ length: count }, (_, index) => ({
         ...generateRandomArt(),
@@ -28,6 +40,7 @@ const generateRandomUserArts = (count: number): ArtType[] => {
     }));
 };
 
+// Default story with sample data
 export const Default: Story = {
     args: {
         userArts: generateRandomUserArts(6),
@@ -38,6 +51,7 @@ export const Default: Story = {
     },
 };
 
+// Story for empty gallery scenario
 export const EmptyGallery: Story = {
     args: {
         userArts: [],

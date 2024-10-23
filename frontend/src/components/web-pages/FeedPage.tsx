@@ -7,18 +7,18 @@ import { SidebarTrigger } from '../ui/sidebar';
 
 interface FeedPageProps {
     initialItems?: ArtType[];
-    userName?: string;
-    userAvatar?: string;
-    companyName?: string;
-    sidebarDefaultOpen?: boolean;
+    userName: string;
+    userAvatar: string;
+    companyName: string;
+    sidebarDefaultOpen: boolean;
 }
 
 const FeedPage: React.FC<FeedPageProps> = ({
     initialItems = [],
     userName,
-    userAvatar = "https://github.com/shadcn.png",
+    userAvatar,
     companyName,
-    sidebarDefaultOpen = true
+    sidebarDefaultOpen
 }) => {
     return (
         <SidebarProvider defaultOpen={sidebarDefaultOpen}>
