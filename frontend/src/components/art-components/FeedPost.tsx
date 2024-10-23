@@ -44,13 +44,12 @@ const FeedPost: React.FC<FeedPostProps> = ({
 }) => {
     const [isEditingState, setIsEditingState] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
+    const [likesCount, setLikesCount] = useState(art.likeCount || 0);
+    const [currentArt, setCurrentArt] = useState(art);
 
     const handleEdit = () => {
         setIsEditingState(true);
     };
-
-    const [likesCount, setLikesCount] = useState(art.likeCount || 0);
-    const [currentArt, setCurrentArt] = useState(art);
 
     const handleLike = () => {
         const newIsLiked = !isLiked;
@@ -125,15 +124,12 @@ const FeedPost: React.FC<FeedPostProps> = ({
 
                 {isEditingState && (
                     <ArtEditor
-                        initialArt={currentArt}
-                        publishArt={(updatedArt) => {
-                            onEdit(updatedArt);
-                            setIsEditingState(false);
-                        }}
-                        onClose={() => setIsEditingState(false)}
                         userAvatar={userAvatar}
-                        isEditing={true}
                         userName={userName}
+                        initialArt={currentArt}
+                        publishArt={handlePublish}
+                        onClose={() => setIsEditingState(false)}
+                        isEditing={isEditingState}
                     />
                 )}
             </div>

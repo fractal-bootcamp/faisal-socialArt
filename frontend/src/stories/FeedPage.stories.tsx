@@ -32,6 +32,7 @@ const generateRandomFeedItems = (count: number): ArtType[] => {
     return Array.from({ length: count }, (_, index) => ({
         ...generateRandomArt(),
         id: `${index + 1}`,
+        likeCount: Math.floor(Math.random() * 100), // Random like count between 0 and 99
     }));
 };
 

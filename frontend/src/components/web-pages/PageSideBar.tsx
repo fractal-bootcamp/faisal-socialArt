@@ -36,15 +36,20 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
     companyName,
 }) => {
     return (
-        <Sidebar>
-            <SidebarHeader className="py-4">
-                <div className="flex items-center space-x-2">
-                    <Avatar>
-                        <AvatarImage src="" alt={`${companyName} Logo`} />
-                        <AvatarFallback>{companyName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <span className="text-xl font-bold">{companyName}</span>
-                </div>
+        // TODO: Add collapsible="icon" when we have a conditional design for the icon
+        <Sidebar variant="sidebar">
+            <SidebarHeader>
+                <Button variant="ghost" className="flex items-center justify-between w-full min-h-12 hover:bg-transparent">
+                    <div className="flex items-center space-x-2">
+                        <Avatar>
+                            <AvatarImage src="" alt={`${companyName} Logo`} />
+                            <AvatarFallback>{companyName.charAt(0)}</AvatarFallback>
+                        </Avatar>
+
+                        <span className="text-xl font-bold">{companyName}</span>
+                    </div>
+                </Button>
+
             </SidebarHeader>
 
             <SidebarContent>
@@ -55,6 +60,7 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                             <SidebarMenuButton className="flex items-center w-full h-full">
                                 <div className="flex items-center">
                                     <LayoutDashboard className="h-5 w-5 mr-2" />
+
                                     <span>Art Feed</span>
                                 </div>
                             </SidebarMenuButton>
@@ -66,6 +72,7 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                             <SidebarMenuButton className="flex items-center w-full h-full">
                                 <div className="flex items-center">
                                     <User className="h-5 w-5 mr-2" />
+
                                     <span>Profile</span>
                                 </div>
                             </SidebarMenuButton>
@@ -74,7 +81,7 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                 </SidebarMenu>
             </SidebarContent>
 
-            <SidebarFooter className="py-4">
+            <SidebarFooter className="border-b">
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="flex items-center justify-between w-full min-h-12">
@@ -83,21 +90,24 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                                     <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
                                     <AvatarFallback>{userName[0]}</AvatarFallback>
                                 </Avatar>
+
                                 <span>{userName}</span>
                             </div>
                             <ChevronsUpDown className="h-4 w-4" />
                         </Button>
                     </DropdownMenuTrigger>
+
                     <DropdownMenuContent align="end" className="w-56">
                         <DropdownMenuItem>
                             <LogOut className="h-4 w-4 mr-2" />
+
                             <span>Logout</span>
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
                 {/* Added copyright notice with smaller font */}
             </SidebarFooter>
-            <div className="container py-2 align-center justify-center mx-auto text-center text-xs mt-2">
+            <div className="container py-1 align-center justify-center text-center text-xs mt-1">
                 © 2024 {companyName}
             </div>
         </Sidebar>
