@@ -51,17 +51,7 @@ export const EmptyFeed: Story = {
         initialItems: [],
         userName: "Dwight Schrute",
         userAvatar: "",
-        companyName: "Dunder Mifflin",
-        sidebarDefaultOpen: true,
-    },
-};
-
-export const CustomUser: Story = {
-    args: {
-        initialItems: generateRandomFeedItems(3),
-        userName: "Jim Halpert",
-        userAvatar: "https://example.com/jim.jpg",
-        companyName: "Dunder Mifflin",
+        companyName: "Schrute Farms",
         sidebarDefaultOpen: true,
     },
 };

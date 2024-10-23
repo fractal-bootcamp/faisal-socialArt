@@ -1,9 +1,8 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import FeedPage from './components/web-pages/FeedPage';
 import ProfilePage from './components/web-pages/ProfilePage';
-import PageSidebar from './components/web-pages/PageSideBar';
-import { SidebarProvider } from './components/ui/sidebar';
+import RootLayout from './components/web-pages/RootLayout';
 
 const App: React.FC = () => {
   // Mock data for demonstration purposes
@@ -13,58 +12,37 @@ const App: React.FC = () => {
 
   return (
     <Router>
-      <SidebarProvider>
-        <div className="app-container flex">
-          {/* Sidebar component */}
-          <PageSidebar
+      <Routes>
+        <Route element={
+          <RootLayout
             userName={userName}
             userAvatar={userAvatar}
             companyName={companyName}
           />
-
-          <div className="content-area flex-grow">
-            <Routes>
-              {/* Route for the Feed Page */}
-              <Route
-                path="/ || /home"
-                element={
-                  <FeedPage
-                    userName={userName}
-                    userAvatar={userAvatar}
-                    companyName={companyName}
-                    sidebarDefaultOpen={true}
-                  />
-                }
-              />
-              {/* Separate route for /art-feed */}
-              <Route
-                path="/art-feed"
-                element={
-                  <FeedPage
-                    userName={userName}
-                    userAvatar={userAvatar}
-                    companyName={companyName}
-                    sidebarDefaultOpen={true}
-                  />
-                }
-              />
-              {/* Route for the Profile Page */}
-              <Route
-                path="/profile"
-                element={
-                  <ProfilePage
-                    userArts={[]}
-                    userName={userName}
-                    userAvatar={userAvatar}
-                    companyName={companyName}
-                    sidebarDefaultOpen={true}
-                  />
-                }
-              />
-            </Routes>
-          </div>
-        </div>
-      </SidebarProvider>
+        }>
+          {/* Feed Page route */}
+          <Route
+            path="/"
+            element={<FeedPage
+              userName={userName}
+              userAvatar={userAvatar}
+              companyName={companyName}
+              sidebarDefaultOpen={true}
+            />}
+          />
+          {/* Profile Page route */}
+          <Route
+            path="/profile"
+            element={<ProfilePage
+              userName={userName}
+              userAvatar={userAvatar}
+              companyName={companyName}
+              sidebarDefaultOpen={true}
+              userArts={[]}
+            />}
+          />
+        </Route>
+      </Routes>
     </Router>
   );
 };
