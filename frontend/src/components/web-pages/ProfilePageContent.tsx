@@ -1,41 +1,36 @@
 import React from 'react';
-import { SidebarInset, SidebarTrigger } from '../ui/sidebar';
-import { ArtType } from '@/services/artService';
+import { SidebarInset } from '../ui/sidebar';
+import { ArtFeed } from '@/services/artService';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import Feed from '../art-components/Feed';
 
 interface ProfilePageContentProps {
-    userArts?: ArtType[];
+    userArts?: ArtFeed;
     userName?: string;
     userAvatar?: string;
 }
 
 const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
     userArts = [],
-    userName = "Michael Scott",
-    userAvatar = "https://github.com/shadcn.png"
+    userName,
+    userAvatar,
 }) => {
     return (
         <SidebarInset className="flex-1">
-            <SidebarTrigger className="absolute top-4 left-4" />
             <main className="flex flex-col items-center justify-start h-full w-full overflow-auto p-8">
                 <div className="w-full max-w-4xl">
                     <div className="flex items-center mb-8">
                         <Avatar className="w-24 h-24 mr-4">
-                            <AvatarImage src={userAvatar} alt={userName} />
-                            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
+                            <AvatarImage src={userAvatar} alt={`${userName} Logo`} />
+                            <AvatarFallback>{userName?.charAt(0) ?? ''}</AvatarFallback>
                         </Avatar>
-                        <h1 className="text-3xl font-bold">{userName}'s Gallery</h1>
+                        <h1 className="text-3xl font-bold">{userName ?? 'User'}'s Gallery</h1>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {userArts.map((art) => (
-                            <div key={art.id} className="border rounded-lg overflow-hidden">
-                                <img src={art.userAvatar} alt={art.userName} className="w-full h-48 object-cover" />
-                                <div className="p-4">
-                                    <p className="text-sm text-gray-500">{art.prompt}</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                    <Feed
+                        initialItems={userArts}
+                        userName={userName ?? ''}
+                        userAvatar={userAvatar ?? ''}
+                    />
                 </div>
             </main>
         </SidebarInset>

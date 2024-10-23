@@ -55,7 +55,7 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [], userName, userAvatar }) 
     };
 
     return (
-        <div className="feed-container min-h-screen flex flex-col items-center overflow-y-auto px-4 py-6">
+        <div className="feed-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
             <Toaster />
             <div className="w-full max-w-md mb-6">
                 <h2 className="text-2xl font-bold mb-4 text-center">
