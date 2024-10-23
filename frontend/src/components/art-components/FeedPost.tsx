@@ -16,6 +16,7 @@ import {
     AlertDialogTitle,
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { toast } from 'sonner';
 
 interface FeedPostProps {
     art: ArtType;
@@ -47,9 +48,15 @@ const FeedPost: React.FC<FeedPostProps> = ({
     const [currentArt, setCurrentArt] = useState(art);
 
     const handleLike = () => {
-        setIsLiked(!isLiked);
-        setLikesCount(prevCount => isLiked ? prevCount - 1 : prevCount + 1);
+        const newIsLiked = !isLiked;
+        setIsLiked(newIsLiked);
+        setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
         onLike();
+        if (newIsLiked) {
+            toast.success('Liked!');
+        } else {
+            toast.success('Unliked!');
+        }
     };
 
     const handlePublish = (updatedArt: ArtType) => {
@@ -63,7 +70,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
             <div className="p-3 sm:p-4">
                 <div className="flex items-center mb-3 sm:mb-4">
                     <Avatar className="h-8 w-8 sm:h-10 sm:w-10 mr-2 sm:mr-3">
-                        <AvatarImage src={userAvatar} alt={userName} />
+                        <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
                         <AvatarFallback>
                             {userName.charAt(0)}
                         </AvatarFallback>
@@ -81,7 +88,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={handleLike}
-                            className={`p-1 sm:p-2 ${isLiked ? "text-red-500" : ""}`}
+                            className={`p-1 sm:p-2 ${isLiked ? "text-red-500 hover:text-red-600" : ""}`}
                         >
                             <Heart className="h-6 w-6 sm:h-8 sm:w-8" fill={isLiked ? "currentColor" : "none"} />
                         </Button>

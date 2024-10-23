@@ -39,7 +39,7 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
                 </button>
                 <div className="flex items-center mb-4">
                     <Avatar className="h-10 w-10 mr-3">
-                        <AvatarImage src={userAvatar} alt={userName} />
+                        <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
                         <AvatarFallback>
                             {userName.charAt(0)}
                         </AvatarFallback>
