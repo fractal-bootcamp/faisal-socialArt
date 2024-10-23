@@ -1,18 +1,36 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import App from './App'
 import './index.css'
+import FeedPage from './components/web-pages/FeedPage'
+import ProfilePage from './components/web-pages/ProfilePage'
 
-// import App from './App'
-// import RootLayout from './components/web-pages/RootLayout'
-// import FeedPage from './components/web-pages/FeedPage'
-// import ProfilePage from './components/web-pages/ProfilePage'
+const userName = "Michael Scott"
+const userAvatar = "https://github.com/shadcn.png"
+const companyName = "Jammin' Art"
 
 // Define the router configuration
 const router = createBrowserRouter([
+
   {
     path: "/",
-    element: <div>Hello</div>,
+    element:
+      <App
+        userName={userName}
+        userAvatar={userAvatar}
+        companyName={companyName}
+      />,
+    children: [
+      {
+        path: "art-feed",
+        element: <FeedPage userName={userName} userAvatar={userAvatar} />
+      },
+      {
+        path: "profile",
+        element: <ProfilePage userName={userName} userAvatar={userAvatar} userArts={[]} />
+      }
+    ]
   }
 ]);
 
@@ -22,29 +40,3 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <RouterProvider router={router} />
   </React.StrictMode>
 )
-
-/* 
-  element: <RootLayout userName="" userAvatar="" companyName="" />,
-  children: [
-    {
-      path: "/",
-      element: <FeedPage
-      userName=""
-      userAvatar=""
-      companyName=""
-      sidebarDefaultOpen={false}
-      />
-    },
-    {
-      path: "/profile",
-      element: <ProfilePage
-      userArts={[]}
-      userName=""
-      userAvatar=""
-      companyName=""
-      sidebarDefaultOpen={false}
-      />
-    },
-  ]
-}
-*/

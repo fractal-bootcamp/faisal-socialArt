@@ -1,45 +1,29 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import FeedPage from './components/web-pages/FeedPage';
-import ProfilePage from './components/web-pages/ProfilePage';
-import RootLayout from './components/web-pages/RootLayout';
+import { Outlet } from 'react-router-dom';
+import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
+import PageSidebar from './components/web-pages/PageSideBar';
 
-const App: React.FC = () => {
-  // Mock data for demonstration purposes
-  const userName = "Michael Scott";
-  const userAvatar = "https://github.com/shadcn.png";
-  const companyName = "Jammin' Art";
+interface AppProps {
+  userName: string;
+  userAvatar: string;
+  companyName: string;
+}
 
+const App: React.FC<AppProps> = ({
+  userName,
+  userAvatar,
+  companyName
+}) => {
   return (
-    <Router>
-      <Routes>
-        <Route element={
-          <RootLayout
-            userName={userName}
-            userAvatar={userAvatar}
-            companyName={companyName}
-          />
-        }>
-          {/* Feed Page route */}
-          <Route
-            path="/"
-            element={<FeedPage
-              userName={userName}
-              userAvatar={userAvatar}
-            />}
-          />
-          {/* Profile Page route */}
-          <Route
-            path="/profile"
-            element={<ProfilePage
-              userName={userName}
-              userAvatar={userAvatar}
-              userArts={[]}
-            />}
-          />
-        </Route>
-      </Routes>
-    </Router>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex">
+        <PageSidebar userName={userName} userAvatar={userAvatar} companyName={companyName} />
+        <main className="flex-grow relative">
+          <SidebarTrigger className="absolute top-4 left-4 z-10" />
+          <Outlet />
+        </main>
+      </div>
+    </SidebarProvider>
   );
 };
 
