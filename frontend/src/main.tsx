@@ -1,22 +1,42 @@
-import { StrictMode } from 'react'
-import './index.css'
+import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import RootLayout from './components/web-pages/RootLayout.tsx'
+import './index.css'
+
 import App from './App'
+import RootLayout from './components/web-pages/RootLayout'
+import FeedPage from './components/web-pages/FeedPage'
+import ProfilePage from './components/web-pages/ProfilePage'
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    element: <RootLayout />,
+    element: <RootLayout userName="" userAvatar="" companyName="" />,
     children: [
-      { index: true, element: <App /> },
-    ],
-  },
-])
+      {
+        path: "/",
+        element: <FeedPage
+          userName=""
+          userAvatar=""
+          companyName=""
+          sidebarDefaultOpen={false}
+        />
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage
+          userArts={[]}
+          userName=""
+          userAvatar=""
+          companyName=""
+          sidebarDefaultOpen={false}
+        />
+      },
+    ]
+  }
+]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <React.StrictMode>
     <RouterProvider router={router} />
-  </StrictMode>
+  </React.StrictMode>
 )

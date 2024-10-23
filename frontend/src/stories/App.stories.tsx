@@ -27,6 +27,3 @@ type Story = StoryObj<typeof App>;
 
 // Default story
 export const Default: Story = {};
-
-// Comment: Removed MemoryRouter to avoid nested Router issues.
-// The App component should handle its own routing internally.
