@@ -24,7 +24,7 @@ const FeedPage: React.FC<FeedPageProps> = ({
         <SidebarProvider defaultOpen={sidebarDefaultOpen}>
             <div className="feed-page flex h-screen">
                 <PageSidebar userName={userName || ''} userAvatar={userAvatar} companyName={companyName || ''} />
-                <div className="flex flex-col flex-grow">
+                <div className="flex flex-grow">
                     <div className="p-4">
                         <SidebarTrigger />
                     </div>

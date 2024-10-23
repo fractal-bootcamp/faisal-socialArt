@@ -6,7 +6,7 @@ const meta: Meta<typeof ArtEditor> = {
     title: 'Components/ArtEditor',
     component: ArtEditor,
     parameters: {
-        layout: 'centered',
+        layout: 'fullscreen',
     },
     tags: ['autodocs'],
     argTypes: {
