@@ -7,17 +7,20 @@ import { Toaster, toast } from 'sonner';
 
 interface FeedProps {
     initialItems?: ArtType[];
+    userName: string;
+    userAvatar: string;
 }
 
 interface FeedItem extends ArtType {
     userName: string;
     isAuthor: boolean;
 }
-const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
+
+const Feed: React.FC<FeedProps> = ({ initialItems = [], userName, userAvatar }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
         initialItems.map(item => ({
             ...item,
-            userName: "Michael Scott",
+            userName: userName,
             isAuthor: true
         }))
     );
@@ -26,7 +29,7 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
     const handlePublishArt = (newArt: ArtType) => {
         const newFeedItem: FeedItem = {
             ...newArt,
-            userName: "Michael Scott",
+            userName: userName,
             isAuthor: true
         };
         setFeedItems(prevItems => [newFeedItem, ...prevItems]);
@@ -37,13 +40,13 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
         setEditingArt(newArt);
-        //toast.success('New art generated!');
     };
 
     const handleDelete = (artId: string) => {
         setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
         toast.success('Art deleted successfully!');
     };
+
     const handleEdit = (updatedArt: ArtType) => {
         setFeedItems(prevItems => prevItems.map(item =>
             item.id === updatedArt.id ? { ...item, ...updatedArt } : item
@@ -55,6 +58,9 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
         <div className="feed-container min-h-screen flex flex-col items-center overflow-y-auto px-4 py-6">
             <Toaster />
             <div className="w-full max-w-md mb-6">
+                <h2 className="text-2xl font-bold mb-4 text-center">
+                    Art Feed
+                </h2>
                 <Button onClick={handleAddNewItem} className="w-full">
                     Generate New Art
                 </Button>
@@ -65,17 +71,17 @@ const Feed: React.FC<FeedProps> = ({ initialItems = [] }) => {
                         initialArt={editingArt}
                         publishArt={handlePublishArt}
                         onClose={() => setEditingArt(null)}
-                        userAvatar="https://github.com/shadcn.png"
+                        userAvatar={userAvatar}
                         isEditing={false}
-                        userName="Michael Scott"
+                        userName={userName}
                     />
                 )}
                 {feedItems.map((item) => (
                     <FeedPost
                         key={item.id}
                         art={item}
-                        userAvatar="https://github.com/shadcn.png"
-                        userName="Michael Scott"
+                        userAvatar={userAvatar}
+                        userName={userName}
                         onLike={() => { }}
                         isAuthor={true}
                         onEdit={handleEdit}

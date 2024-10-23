@@ -43,7 +43,6 @@ const Controllers: React.FC<ControllersProps> = ({
         setArt(initialArt);
     }
 
-    // 1. render a controller using art
     return (
         <Card className="w-[350px]">
             <CardHeader>

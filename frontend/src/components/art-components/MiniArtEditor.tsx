@@ -44,7 +44,7 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                 <div className="grid gap-4">
                     <div className="flex items-center gap-2">
                         <Avatar className="h-10 w-10">
-                            <AvatarImage src={userAvatar} alt={userName} />
+                            <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
                             <AvatarFallback>
                                 {userName.charAt(0)}
                             </AvatarFallback>
