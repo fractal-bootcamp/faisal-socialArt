@@ -9,6 +9,7 @@ interface FeedProps {
     initialItems?: ArtType[];
     userName: string;
     userAvatar: string;
+    displayAsGrid?: boolean;
 }
 
 interface FeedItem extends ArtType {
@@ -20,6 +21,7 @@ const Feed: React.FC<FeedProps> = ({
     initialItems = [],
     userName,
     userAvatar,
+    displayAsGrid = false
 }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
         initialItems.map(item => ({
@@ -66,32 +68,32 @@ const Feed: React.FC<FeedProps> = ({
                     Generate New Art
                 </Button>
             </div>
-
-            <div className="w-full max-w-md space-y-6">
-                {editingArt && (
-                    <ArtEditor
-                        initialArt={editingArt}
-                        publishArt={handlePublishArt}
-                        onClose={() => setEditingArt(null)}
-                        userAvatar={userAvatar}
-                        isEditing={false}
-                        userName={userName}
-                    />
-                )}
-
+            <div className={`w-full ${displayAsGrid ? 'max-w-4xl grid grid-cols-3 gap-4' : 'max-w-md space-y-6'}`}>
                 {feedItems.map((item) => (
                     <FeedPost
                         key={item.id}
                         art={item}
                         userAvatar={userAvatar}
                         userName={userName}
-                        onLike={() => { }}
                         isAuthor={true}
+                        onLike={() => { }}
                         onEdit={handleEdit}
                         onDelete={() => handleDelete(item.id)}
+                        displayAsGrid={displayAsGrid}
                     />
                 ))}
             </div>
+            {/* Render ArtEditor at the end of the component */}
+            {editingArt && (
+                <ArtEditor
+                    initialArt={editingArt}
+                    publishArt={handlePublishArt}
+                    onClose={() => setEditingArt(null)}
+                    userAvatar={userAvatar}
+                    isEditing={false}
+                    userName={userName}
+                />
+            )}
         </div>
     );
 };

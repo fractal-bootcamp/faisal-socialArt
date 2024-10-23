@@ -49,8 +49,8 @@ export function updateFeed(art: ArtWork, artFeed: ArtFeed): ArtFeed {
 export function generateRandomArt(): ArtWork {
     return {
         id: uuidv4(),
-        userName: "", // Adding userName
-        isAuthor: false, // Adding isAuthor
+        userName: "",
+        isAuthor: false,
         colorA: {
             h: Math.floor(Math.random() * 361),
             s: Math.floor(Math.random() * 101),
@@ -61,7 +61,7 @@ export function generateRandomArt(): ArtWork {
             s: Math.floor(Math.random() * 101),
             b: Math.floor(Math.random() * 101)
         },
-        stripeCount: Math.floor(Math.random() * 49) + 2, // Random number between 2 and 50
+        stripeCount: Math.floor(Math.random() * 49) + 2,
         style: Math.random() < 0.5 ? "line" : "circle"
     };
 }

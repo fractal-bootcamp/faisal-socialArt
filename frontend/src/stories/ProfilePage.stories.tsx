@@ -30,18 +30,23 @@ const meta: Meta<typeof ProfilePage> = {
 export default meta;
 type Story = StoryObj<typeof ProfilePage>;
 
-// Function to generate random user arts
+// Function to generate random user arts with like count
 const generateRandomUserArts = (count: number): ArtType[] => {
-    return Array.from({ length: count }, (_, index) => ({
-        ...generateRandomArt(),
-        id: `${index + 1}`,
-    }));
+    return Array.from({ length: count }, (_, index) => {
+        const randomArt = generateRandomArt();
+        return {
+            ...randomArt,
+            id: `${index + 1}`,
+            // Ensure likeCount is included in the ArtType
+            likeCount: Math.floor(Math.random() * 100), // Random like count between 0 and 99
+        };
+    });
 };
 
-// Default story with sample data
+// Default story with sample data including like counts
 export const Default: Story = {
     args: {
-        userArts: generateRandomUserArts(6),
+        userArts: generateRandomUserArts(12),
         userName: "Michael Scott",
         userAvatar: "https://github.com/shadcn.png",
     },
@@ -55,3 +60,7 @@ export const EmptyGallery: Story = {
         userAvatar: "",
     },
 };
+
+// Comment: We've ensured that likeCount is explicitly added to each art object.
+// However, make sure that the ArtType interface in artService.ts includes likeCount as a property.
+// If it doesn't, update the interface to include: likeCount?: number;

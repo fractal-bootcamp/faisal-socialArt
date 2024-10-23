@@ -8,7 +8,8 @@ import { Toaster, toast } from 'sonner';
 interface FeedGridProps {
     initialItems?: ArtType[];
     userName: string;
-    userAvatar?: string;
+    userAvatar: string;
+    isProfilePage?: boolean;
 }
 
 interface FeedItem extends ArtType {
@@ -19,7 +20,8 @@ interface FeedItem extends ArtType {
 const FeedGrid: React.FC<FeedGridProps> = ({
     initialItems = [],
     userName,
-    userAvatar = '', // Provide a default value for userAvatar
+    userAvatar,
+    isProfilePage = true
 }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
         initialItems.map(item => ({
@@ -66,36 +68,32 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                     Generate New Art
                 </Button>
             </div>
-            {/* Grid container */}
-            <div className="w-full max-w-4xl grid grid-cols-2 gap-4">
-                {editingArt && (
-                    <div className="col-span-full">
-                        <ArtEditor
-                            initialArt={editingArt}
-                            publishArt={handlePublishArt}
-                            onClose={() => setEditingArt(null)}
-                            userAvatar={userAvatar}
-                            userName={userName}
-                            isEditing={false}
-                        />
-                    </div>
-                )}
-
+            <div className="w-full max-w-4xl grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {feedItems.map((item) => (
                     <FeedPost
                         key={item.id}
                         art={item}
                         userAvatar={userAvatar}
                         userName={userName}
-                        onLike={() => { }}
                         isAuthor={true}
+                        onLike={() => { }}
                         onEdit={handleEdit}
                         onDelete={() => handleDelete(item.id)}
                         displayAsGrid={true}
-                        isProfilePage={true}
+                        isProfilePage={isProfilePage}
                     />
                 ))}
             </div>
+            {editingArt && (
+                <ArtEditor
+                    initialArt={editingArt}
+                    publishArt={handlePublishArt}
+                    onClose={() => setEditingArt(null)}
+                    userAvatar={userAvatar}
+                    isEditing={false}
+                    userName={userName}
+                />
+            )}
         </div>
     );
 };
