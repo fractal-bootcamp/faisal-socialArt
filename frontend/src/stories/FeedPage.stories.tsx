@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { BrowserRouter } from 'react-router-dom';
 import FeedPage from '../components/web-pages/FeedPage';
 import { ArtType, generateRandomArt } from '@/services/artService';
 
@@ -15,6 +16,14 @@ const meta: Meta<typeof FeedPage> = {
         userAvatar: { control: 'text' },
         sidebarDefaultOpen: { control: 'boolean' },
     },
+    // Wrap the component in BrowserRouter
+    decorators: [
+        (Story) => (
+            <BrowserRouter>
+                <Story />
+            </BrowserRouter>
+        ),
+    ],
 };
 
 export default meta;

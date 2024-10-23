@@ -6,8 +6,12 @@ const RootLayout: React.FC = () => {
         <div className="app">
             <nav>
                 <ul>
-                    <li><Link to="/">
-                        Feed
+                    <li><Link to="/art-feed">
+                        Art Feed
+                    </Link>
+                    </li>
+                    <li><Link to="/profile">
+                        Profile
                     </Link>
                     </li>
                 </ul>

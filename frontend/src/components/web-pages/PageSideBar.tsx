@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 import {
     LayoutDashboard,
     User,
@@ -48,21 +49,27 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
 
             <SidebarContent>
                 <SidebarMenu className="p-2">
+                    {/* Art Feed link */}
                     <SidebarMenuItem className="min-h-10 hover:bg-gray-100 rounded-lg">
-                        <SidebarMenuButton className="flex items-center  w-full h-full">
-                            <div className="flex items-center">
-                                <LayoutDashboard className="h-5 w-5 mr-2" />
-                                <span>Art Feed</span>
-                            </div>
-                        </SidebarMenuButton>
+                        <Link to="/art-feed" className="w-full">
+                            <SidebarMenuButton className="flex items-center w-full h-full">
+                                <div className="flex items-center">
+                                    <LayoutDashboard className="h-5 w-5 mr-2" />
+                                    <span>Art Feed</span>
+                                </div>
+                            </SidebarMenuButton>
+                        </Link>
                     </SidebarMenuItem>
+                    {/* Profile link */}
                     <SidebarMenuItem className="min-h-10 hover:bg-gray-100 rounded-lg">
-                        <SidebarMenuButton className="flex items-center w-full h-full">
-                            <div className="flex items-center">
-                                <User className="h-5 w-5 mr-2" />
-                                <span>Profile</span>
-                            </div>
-                        </SidebarMenuButton>
+                        <Link to="/profile" className="w-full">
+                            <SidebarMenuButton className="flex items-center w-full h-full">
+                                <div className="flex items-center">
+                                    <User className="h-5 w-5 mr-2" />
+                                    <span>Profile</span>
+                                </div>
+                            </SidebarMenuButton>
+                        </Link>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarContent>

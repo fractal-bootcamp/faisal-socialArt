@@ -12,7 +12,7 @@ app.use(express.json());
 
 // Routes
 app.get('/', (_req, res) => {
-    res.send('Hello, World!');
+    res.send("Hello, Jammin's Art Feed!");
 });
 
 app.get('/api/art-feed', async (_req: Request, res: Response) => {
@@ -21,7 +21,8 @@ app.get('/api/art-feed', async (_req: Request, res: Response) => {
             orderBy: { createdAt: 'desc' }
         });
         res.status(200)
-            .json({ message: 'Fetching art feed...', data: artFeed });
+        console.log({ message: 'Fetching art feed...', data: artFeed });
+        res.status(200).json(artFeed);
     } catch (error) {
         console.error('Error fetching art feed:', error);
         res.status(500)
@@ -39,7 +40,8 @@ app.get('/api/art-feed/:id', async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'Art work not found.' });
         }
         res.status(200)
-            .json({ message: 'Fetching art work...', data: artWork });
+        console.log({ message: 'Fetching art work...', data: artWork });
+        res.status(200).json(artWork);
     } catch (error) {
         console.error('Error fetching art work:', error);
         res.status(500)
@@ -59,7 +61,8 @@ app.post('/api/art-feed', async (req: Request, res: Response) => {
             data: prismaArtData
         });
         res.status(201)
-            .json({ message: 'Created art work...', data: newArtWork });
+        console.log({ message: 'Created art work...', data: newArtWork });
+        res.status(201).json(newArtWork); // Send the new artwork as the response
     } catch (error) {
         console.error('Error creating art work:', error);
         res.status(500)
