@@ -5,10 +5,10 @@ import ArtEditor from './ArtEditor';
 import FeedPost from './FeedPost';
 import { Toaster, toast } from 'sonner';
 
-interface FeedProps {
+interface FeedGridProps {
     initialItems?: ArtType[];
     userName: string;
-    userAvatar: string;
+    userAvatar?: string;
 }
 
 interface FeedItem extends ArtType {
@@ -16,10 +16,10 @@ interface FeedItem extends ArtType {
     isAuthor: boolean;
 }
 
-const Feed: React.FC<FeedProps> = ({
+const FeedGrid: React.FC<FeedGridProps> = ({
     initialItems = [],
     userName,
-    userAvatar,
+    userAvatar = '', // Provide a default value for userAvatar
 }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
         initialItems.map(item => ({
@@ -59,24 +59,26 @@ const Feed: React.FC<FeedProps> = ({
     };
 
     return (
-        <div className="feed-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
+        <div className="feed-grid-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
             <Toaster />
-            <div className="w-full max-w-md mb-6">
+            <div className="w-full max-w-4xl mb-6">
                 <Button onClick={handleAddNewItem} className="w-full">
                     Generate New Art
                 </Button>
             </div>
-
-            <div className="w-full max-w-md space-y-6">
+            {/* Grid container */}
+            <div className="w-full max-w-4xl grid grid-cols-2 gap-4">
                 {editingArt && (
-                    <ArtEditor
-                        initialArt={editingArt}
-                        publishArt={handlePublishArt}
-                        onClose={() => setEditingArt(null)}
-                        userAvatar={userAvatar}
-                        isEditing={false}
-                        userName={userName}
-                    />
+                    <div className="col-span-full">
+                        <ArtEditor
+                            initialArt={editingArt}
+                            publishArt={handlePublishArt}
+                            onClose={() => setEditingArt(null)}
+                            userAvatar={userAvatar}
+                            userName={userName}
+                            isEditing={false}
+                        />
+                    </div>
                 )}
 
                 {feedItems.map((item) => (
@@ -89,6 +91,8 @@ const Feed: React.FC<FeedProps> = ({
                         isAuthor={true}
                         onEdit={handleEdit}
                         onDelete={() => handleDelete(item.id)}
+                        displayAsGrid={true}
+                        isProfilePage={true}
                     />
                 ))}
             </div>
@@ -96,4 +100,4 @@ const Feed: React.FC<FeedProps> = ({
     );
 };
 
-export default Feed;
+export default FeedGrid;

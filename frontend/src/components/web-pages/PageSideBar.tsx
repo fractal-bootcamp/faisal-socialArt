@@ -95,7 +95,11 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                         </DropdownMenuItem>
                     </DropdownMenuContent>
                 </DropdownMenu>
+                {/* Added copyright notice with smaller font */}
             </SidebarFooter>
+            <div className="container py-2 align-center justify-center mx-auto text-center text-xs mt-2">
+                © 2024 {companyName}
+            </div>
         </Sidebar>
     );
 };

@@ -49,10 +49,12 @@ const Controllers: React.FC<ControllersProps> = ({
                 <CardTitle>
                     Art Controllers
                 </CardTitle>
+
                 <CardDescription>
                     Customize your art.
                 </CardDescription>
             </CardHeader>
+
             <CardContent>
                 <form>
                     <div className="grid w-full items-center gap-4">
@@ -60,6 +62,7 @@ const Controllers: React.FC<ControllersProps> = ({
                             <Label htmlFor="colorA">
                                 Color A
                             </Label>
+
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorA-hue"
@@ -72,6 +75,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     }}
                                     placeholder="Hue"
                                 />
+
                                 <Input
                                     id="colorA-saturation"
                                     type="number"
@@ -83,6 +87,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     }}
                                     placeholder="Saturation"
                                 />
+
                                 <Input
                                     id="colorA-brightness"
                                     type="number"
@@ -96,10 +101,12 @@ const Controllers: React.FC<ControllersProps> = ({
                                 />
                             </div>
                         </div>
+
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="colorB">
                                 Color B
                             </Label>
+
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorB-hue"
@@ -112,6 +119,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     }}
                                     placeholder="Hue"
                                 />
+
                                 <Input
                                     id="colorB-saturation"
                                     type="number"
@@ -123,6 +131,7 @@ const Controllers: React.FC<ControllersProps> = ({
                                     }}
                                     placeholder="Saturation"
                                 />
+
                                 <Input
                                     id="colorB-brightness"
                                     type="number"
@@ -134,12 +143,15 @@ const Controllers: React.FC<ControllersProps> = ({
                                     }}
                                     placeholder="Brightness"
                                 />
+
                             </div>
                         </div>
+
                         <div className="flex flex-col space-y-1.5">
                             <Label htmlFor="stripeCount">
                                 Number of Stripes
                             </Label>
+
                             <Slider
                                 id="stripeCount"
                                 min={2}
@@ -148,23 +160,35 @@ const Controllers: React.FC<ControllersProps> = ({
                                 value={[stripeCount]}
                                 onValueChange={(value: number[]) => onStripeCountChange(Math.floor(value[0]))}
                             />
+
                             <div className="text-center">{stripeCount}</div>
                         </div>
+
                         <div className="flex flex-col space-y-1.5">
-                            <Label htmlFor="style">Style</Label>
+                            <Label htmlFor="style">
+                                Style
+                            </Label>
+
                             <Select value={style} onValueChange={(value) => onStyleChange(value as ArtStyle)}>
                                 <SelectTrigger id="style">
                                     <SelectValue placeholder="Select style" />
                                 </SelectTrigger>
+
                                 <SelectContent position="popper">
-                                    <SelectItem value="line">Line</SelectItem>
-                                    <SelectItem value="circle">Circle</SelectItem>
+                                    <SelectItem value="line">
+                                        Line
+                                    </SelectItem>
+
+                                    <SelectItem value="circle">
+                                        Circle
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
                 </form>
             </CardContent>
+
             <CardFooter className="flex justify-between">
                 <Button variant="outline" onClick={handleReset}>
                     Reset

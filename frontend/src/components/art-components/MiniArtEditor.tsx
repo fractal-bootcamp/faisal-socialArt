@@ -38,24 +38,33 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
             if (!open) onClose();
         }}>
             <PopoverTrigger asChild>
-                <Button variant="outline">Edit</Button>
+                <Button variant="outline">
+                    Edit
+                </Button>
             </PopoverTrigger>
+
             <PopoverContent className="w-80">
                 <div className="grid gap-4">
                     <div className="flex items-center gap-2">
                         <Avatar className="h-10 w-10">
                             <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
+
                             <AvatarFallback>
                                 {userName.charAt(0)}
                             </AvatarFallback>
                         </Avatar>
+
                         <span className="font-semibold text-lg">
                             {userName}
                         </span>
                     </div>
+
                     <div className="space-y-2">
                         <div className="space-y-1">
-                            <Label htmlFor="colorA">Color A</Label>
+                            <Label htmlFor="colorA">
+                                Color A
+                            </Label>
+
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorA-hue"
@@ -68,6 +77,7 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                     }}
                                     placeholder="Hue"
                                 />
+
                                 <Input
                                     id="colorA-saturation"
                                     type="number"
@@ -79,6 +89,7 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                     }}
                                     placeholder="Saturation"
                                 />
+
                                 <Input
                                     id="colorA-brightness"
                                     type="number"
@@ -92,8 +103,12 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                 />
                             </div>
                         </div>
+
                         <div className="space-y-1">
-                            <Label htmlFor="colorB">Color B</Label>
+                            <Label htmlFor="colorB">
+                                Color B
+                            </Label>
+
                             <div className="grid grid-cols-3 gap-2">
                                 <Input
                                     id="colorB-hue"
@@ -106,6 +121,7 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                     }}
                                     placeholder="Hue"
                                 />
+
                                 <Input
                                     id="colorB-saturation"
                                     type="number"
@@ -117,6 +133,7 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                     }}
                                     placeholder="Saturation"
                                 />
+
                                 <Input
                                     id="colorB-brightness"
                                     type="number"
@@ -130,8 +147,12 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                 />
                             </div>
                         </div>
+
                         <div className="space-y-1">
-                            <Label htmlFor="stripeCount">Number of Stripes</Label>
+                            <Label htmlFor="stripeCount">
+                                Number of Stripes
+                            </Label>
+
                             <Slider
                                 id="stripeCount"
                                 min={2}
@@ -140,25 +161,38 @@ const MiniArtEditor: React.FC<MiniArtEditorProps> = ({
                                 value={[art.stripeCount]}
                                 onValueChange={(value: number[]) => setArt({ ...art, stripeCount: Math.floor(value[0]) })}
                             />
+
                             <div className="text-center">{art.stripeCount}</div>
                         </div>
+
                         <div className="space-y-1">
-                            <Label htmlFor="style">Style</Label>
+                            <Label htmlFor="style">
+                                Style
+                            </Label>
+
                             <Select value={art.style} onValueChange={(value) => setArt({ ...art, style: value as ArtType['style'] })}>
                                 <SelectTrigger id="style">
                                     <SelectValue placeholder="Select style" />
                                 </SelectTrigger>
+
                                 <SelectContent position="popper">
-                                    <SelectItem value="line">Line</SelectItem>
-                                    <SelectItem value="circle">Circle</SelectItem>
+                                    <SelectItem value="line">
+                                        Line
+                                    </SelectItem>
+
+                                    <SelectItem value="circle">
+                                        Circle
+                                    </SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
                     </div>
+
                     <div className="flex justify-between">
                         <Button variant="outline" onClick={() => setArt(initialArt)}>
                             Reset
                         </Button>
+
                         <Button onClick={handlePublish}>
                             Update
                         </Button>
