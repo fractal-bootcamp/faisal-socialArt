@@ -19,7 +19,7 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
         <SidebarInset className="flex-1">
             <main className="flex flex-col items-center justify-start h-full w-full overflow-auto p-8">
                 <div className="w-full max-w-4xl">
-                    <div className="flex items-center mb-8">
+                    <div className="flex items-center">
                         <Avatar className="w-24 h-24 mr-4">
                             <AvatarImage src={userAvatar} alt={`${userName} Logo`} />
                             <AvatarFallback>{userName?.charAt(0) ?? ''}</AvatarFallback>
@@ -33,7 +33,6 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
                         initialItems={userArts}
                         userName={userName ?? ''}
                         userAvatar={userAvatar ?? ''}
-                        isProfilePage={true}
                     />
                 </div>
             </main>

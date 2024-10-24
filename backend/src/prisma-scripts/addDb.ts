@@ -8,7 +8,6 @@ const main = async () => {
     data: {
       email: 'user1@example.com',
       username: 'user1',
-      password: 'hashedpassword1',
       firstName: 'Michael',
       lastName: 'Scott',
       avatar: 'https://github.com/shadcn.png',
@@ -19,7 +18,6 @@ const main = async () => {
     data: {
       email: 'user2@example.com',
       username: 'user2',
-      password: 'hashedpassword2',
       firstName: 'Dwight',
       lastName: 'Schrute',
       avatar: '',

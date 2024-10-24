@@ -125,7 +125,7 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
         }
 
         // Remove sensitive information like password before sending the response
-        const { password, ...safeUserProfile } = userProfile;
+        const { ...safeUserProfile } = userProfile;
 
         console.log({ message: 'Fetching user profile and artwork...', data: safeUserProfile });
         res.status(200).json(safeUserProfile);

@@ -8,7 +8,7 @@ import ProfilePage from './components/web-pages/ProfilePage'
 
 const userName = "Michael Scott"
 const userAvatar = "https://github.com/shadcn.png"
-const companyName = "Jammin' Art"
+const companyName = "Jammin'"
 
 // Define the router configuration
 const router = createBrowserRouter([
