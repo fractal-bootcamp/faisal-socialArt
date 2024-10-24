@@ -24,7 +24,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "art-feed",
-        element: <FeedPage userName={userName} userAvatar={userAvatar} />
+        element: <FeedPage userName={userName} userAvatar={userAvatar} handleDeleteArt={() => { }} onEditArt={() => { }} />
       },
       {
         path: "profile",

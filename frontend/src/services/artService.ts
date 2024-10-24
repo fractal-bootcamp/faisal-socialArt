@@ -19,6 +19,7 @@ export interface ArtWork {
     id: string;
     userName: string;
     isAuthor: boolean;
+    authorId: string;
     colorA: { h: number; s: number; b: number };
     colorB: { h: number; s: number; b: number };
     stripeCount: number;
@@ -46,11 +47,12 @@ export function updateFeed(art: ArtWork, artFeed: ArtFeed): ArtFeed {
     }
 }
 
-export function generateRandomArt(): ArtWork {
+export function generateRandomArt(): ArtType {
     return {
-        id: uuidv4(),
+        id: "",
         userName: "",
         isAuthor: false,
+        authorId: "",
         colorA: {
             h: Math.floor(Math.random() * 361),
             s: Math.floor(Math.random() * 101),
@@ -62,6 +64,6 @@ export function generateRandomArt(): ArtWork {
             b: Math.floor(Math.random() * 101)
         },
         stripeCount: Math.floor(Math.random() * 49) + 2,
-        style: Math.random() < 0.5 ? "line" : "circle"
+        style: Math.random() < 0.5 ? "line" : "circle",
     };
 }
