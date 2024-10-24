@@ -33,6 +33,8 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
                         initialItems={userArts}
                         userName={userName ?? ''}
                         userAvatar={userAvatar ?? ''}
+                        handleDeleteArt={() => { }}
+                        onEditArt={() => { }}
                     />
                 </div>
             </main>

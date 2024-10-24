@@ -10,6 +10,8 @@ interface FeedGridProps {
     userName: string;
     userAvatar: string;
     isProfilePage?: boolean;
+    handleDeleteArt: (artId: string) => void;
+    onEditArt?: (updatedArt: ArtType) => void;
 }
 
 interface FeedItem extends ArtType {
@@ -21,7 +23,9 @@ const FeedGrid: React.FC<FeedGridProps> = ({
     initialItems = [],
     userName,
     userAvatar,
-    isProfilePage = true
+    isProfilePage = true,
+    handleDeleteArt,
+    onEditArt
 }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
         initialItems.map(item => ({
@@ -32,6 +36,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
     );
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
 
+    // Function to handle publishing new art
     const handlePublishArt = (newArt: ArtType) => {
         const newFeedItem: FeedItem = {
             ...newArt,
@@ -43,20 +48,18 @@ const FeedGrid: React.FC<FeedGridProps> = ({
         toast.success('Art published successfully!');
     };
 
+    // Function to generate and set new random art for editing
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
         setEditingArt(newArt);
     };
 
-    const handleDelete = (artId: string) => {
-        setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
-        toast.success('Art deleted successfully!');
-    };
-
+    // Function to handle editing existing art
     const handleEdit = (updatedArt: ArtType) => {
         setFeedItems(prevItems => prevItems.map(item =>
             item.id === updatedArt.id ? { ...item, ...updatedArt } : item
         ));
+        if (onEditArt) onEditArt(updatedArt);
         toast.success('Art updated successfully!');
     };
 
@@ -76,9 +79,9 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                         userAvatar={userAvatar}
                         userName={userName}
                         isAuthor={true}
-                        onLike={() => { }}
+                        onLike={() => { }} // Placeholder for like functionality
                         onEdit={handleEdit}
-                        onDelete={() => handleDelete(item.id)}
+                        onDelete={() => handleDeleteArt(item.id)}
                         displayAsGrid={true}
                         isProfilePage={isProfilePage}
                     />

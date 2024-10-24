@@ -10,6 +10,8 @@ interface FeedProps {
     userName: string;
     userAvatar: string;
     displayAsGrid?: boolean;
+    handleDeleteArt: (artId: string) => void;
+    onEditArt?: (updatedArt: ArtType) => void;
 }
 
 interface FeedItem extends ArtType {
@@ -21,42 +23,32 @@ const Feed: React.FC<FeedProps> = ({
     initialItems = [],
     userName,
     userAvatar,
-    displayAsGrid = false
+    displayAsGrid = false,
+    handleDeleteArt,
+    onEditArt
 }) => {
-    const [feedItems, setFeedItems] = useState<FeedItem[]>(
-        initialItems.map(item => ({
-            ...item,
-            userName: userName,
-            isAuthor: true
-        }))
-    );
+    const [feedItems, setFeedItems] = useState<ArtType[]>(initialItems);
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
 
+    // Handle publishing new art
     const handlePublishArt = (newArt: ArtType) => {
-        const newFeedItem: FeedItem = {
-            ...newArt,
-            userName: userName,
-            isAuthor: true
-        };
-        setFeedItems(prevItems => [newFeedItem, ...prevItems]);
+        setFeedItems(prevItems => [newArt, ...prevItems]);
         setEditingArt(null);
         toast.success('Art published successfully!');
     };
 
+    // Generate new random art
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
         setEditingArt(newArt);
     };
 
-    const handleDelete = (artId: string) => {
-        setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
-        toast.success('Art deleted successfully!');
-    };
-
+    // Handle editing existing art
     const handleEdit = (updatedArt: ArtType) => {
         setFeedItems(prevItems => prevItems.map(item =>
-            item.id === updatedArt.id ? { ...item, ...updatedArt } : item
+            item.id === updatedArt.id ? updatedArt : item
         ));
+        if (onEditArt) onEditArt(updatedArt);
         toast.success('Art updated successfully!');
     };
 
@@ -76,9 +68,9 @@ const Feed: React.FC<FeedProps> = ({
                         userAvatar={userAvatar}
                         userName={userName}
                         isAuthor={true}
-                        onLike={() => { }}
+                        onLike={() => { }} // Placeholder for like functionality
                         onEdit={handleEdit}
-                        onDelete={() => handleDelete(item.id)}
+                        onDelete={() => handleDeleteArt(item.id)}
                         displayAsGrid={displayAsGrid}
                     />
                 ))}
