@@ -63,7 +63,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
     return (
         <div className="feed-grid-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
             <Toaster />
-            <div className="w-full max-w-4xl mb-6">
+            <div className="w-full max-w-4xl my-6">
                 <Button onClick={handleAddNewItem} className="w-full">
                     Generate New Art
                 </Button>
