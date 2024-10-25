@@ -24,7 +24,6 @@ const FeedGrid: React.FC<FeedGridProps> = ({
     userName,
     userAvatar,
     isProfilePage = true,
-    handleDeleteArt,
     onEditArt
 }) => {
     const [feedItems, setFeedItems] = useState<FeedItem[]>(
@@ -36,7 +35,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
     );
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
 
-    // Function to handle publishing new art
+    // Handle publishing new art
     const handlePublishArt = (newArt: ArtType) => {
         const newFeedItem: FeedItem = {
             ...newArt,
@@ -48,13 +47,19 @@ const FeedGrid: React.FC<FeedGridProps> = ({
         toast.success('Art published successfully!');
     };
 
-    // Function to generate and set new random art for editing
+    // Handle generating new random art
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
         setEditingArt(newArt);
     };
 
-    // Function to handle editing existing art
+    // Handle deleting art
+    const handleDelete = (artId: string) => {
+        setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
+        toast.success('Art deleted successfully!');
+    };
+
+    // Handle editing art
     const handleEdit = (updatedArt: ArtType) => {
         setFeedItems(prevItems => prevItems.map(item =>
             item.id === updatedArt.id ? { ...item, ...updatedArt } : item
@@ -81,7 +86,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                         isAuthor={true}
                         onLike={() => { }} // Placeholder for like functionality
                         onEdit={handleEdit}
-                        onDelete={() => handleDeleteArt(item.id)}
+                        onDelete={() => handleDelete(item.id)}
                         displayAsGrid={true}
                         isProfilePage={isProfilePage}
                     />
