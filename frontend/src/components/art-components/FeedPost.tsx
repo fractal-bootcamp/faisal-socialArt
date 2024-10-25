@@ -5,6 +5,7 @@ import ArtEditor from './ArtEditor';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, Edit, Trash2 } from 'lucide-react';
+//import { updateLike } from '../../services/api';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -17,6 +18,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
+
 
 interface FeedPostProps {
     art: ArtType & { likeCount?: number };
@@ -37,7 +39,6 @@ const FeedPost: React.FC<FeedPostProps> = ({
     userAvatar,
     userName,
     isAuthor,
-    // onLike,
     onEdit,
     onDelete,
     displayAsGrid = false,
@@ -56,12 +57,8 @@ const FeedPost: React.FC<FeedPostProps> = ({
         const newIsLiked = !isLiked;
         setIsLiked(newIsLiked);
         setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
-        // onLike(newIsLiked);
-        if (newIsLiked) {
-            toast.success('Liked!');
-        } else {
-            toast.success('Unliked!');
-        }
+        updateLike(art.id, newIsLiked);
+        toast.success(newIsLiked ? 'Liked!' : 'Unliked!');
     };
 
     const handlePublish = (updatedArt: ArtType) => {

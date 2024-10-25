@@ -37,14 +37,18 @@ const FeedGrid: React.FC<FeedGridProps> = ({
 
     // Handle publishing new art
     const handlePublishArt = (newArt: ArtType) => {
-        const newFeedItem: FeedItem = {
-            ...newArt,
-            userName: userName,
-            isAuthor: true
-        };
-        setFeedItems(prevItems => [newFeedItem, ...prevItems]);
-        setEditingArt(null);
-        toast.success('Art published successfully!');
+        try {
+            const newFeedItem: FeedItem = {
+                ...newArt,
+                userName: userName,
+                isAuthor: true
+            };
+            setFeedItems(prevItems => [newFeedItem, ...prevItems]);
+            setEditingArt(null);
+            toast.success('Art published successfully!');
+        } catch (error) {
+            toast.error('Failed to publish art. Please try again.');
+        }
     };
 
     // Handle generating new random art
@@ -55,8 +59,12 @@ const FeedGrid: React.FC<FeedGridProps> = ({
 
     // Handle deleting art
     const handleDelete = (artId: string) => {
-        setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
-        toast.success('Art deleted successfully!');
+        try {
+            setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
+            toast.success('Art deleted successfully!');
+        } catch (error) {
+            toast.error('Failed to delete art. Please try again.');
+        }
     };
 
     // Handle editing art
@@ -64,8 +72,12 @@ const FeedGrid: React.FC<FeedGridProps> = ({
         setFeedItems(prevItems => prevItems.map(item =>
             item.id === updatedArt.id ? { ...item, ...updatedArt } : item
         ));
-        if (onEditArt) onEditArt(updatedArt);
-        toast.success('Art updated successfully!');
+        try {
+            if (onEditArt) onEditArt(updatedArt);
+            toast.success('Art updated successfully!');
+        } catch (error) {
+            toast.error('Failed to update art. Please try again.');
+        }
     };
 
     return (
