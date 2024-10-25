@@ -120,7 +120,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                         isAuthor={true}
                         onLike={() => { }} // Placeholder for like functionality
                         onEdit={handleEdit}
-                        onDelete={() => handleDelete(item.id)}
+                        onDelete={() => handleDelete(item.id || '')}
                         displayAsGrid={true}
                         isProfilePage={isProfilePage}
                     />

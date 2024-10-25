@@ -6,6 +6,7 @@
 // updating (e.g. calculating the NEXT STATE given current state and an input) the art data should be done through these functions.
 
 import { v4 as uuidv4 } from 'uuid';
+import { ArtWork } from '../../../common/types';
 
 export type ArtFeed = ArtWork[];
 
@@ -14,18 +15,6 @@ export type ArtStyle = "line" | "circle";
 export type Color = "colorA" | "colorB";
 
 export type ArtType = ArtWork;
-
-export interface ArtWork {
-    id: string;
-    userAvatar: string;
-    userName: string;
-    isAuthor: boolean;
-    authorId: string;
-    colorA: { h: number; s: number; b: number };
-    colorB: { h: number; s: number; b: number };
-    stripeCount: number;
-    style: ArtStyle;
-}
 
 export function updateColor(art: ArtWork, color: Color, hsb: { h: number, s: number, b: number }): ArtWork {
     const safeH = Math.floor(Math.max(0, Math.min(360, hsb.h)));

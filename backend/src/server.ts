@@ -1,35 +1,9 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
-
-type ArtStyle = "line" | "circle";
-
-type ArtWorkData = {
-    id: string;
-    userAvatar: string;
-    userName: string;
-    isAuthor: boolean;
-    authorId: string;
-    colorA: { h: number, s: number, b: number };
-    colorB: { h: number, s: number, b: number };
-    stripeCount: number;
-    style: ArtStyle;
-}
-
-type ArtConfigurationInDB = {
-    colorA: {
-        h: number;
-        s: number;
-        b: number;
-    };
-    colorB: {
-        h: number;
-        s: number;
-        b: number;
-    };
-    stripeCount: number;
-    style: ArtStyle;
-}
+import { clerkMiddleware, requireAuth, clerkClient, getAuth } from '@clerk/express';
+import { getArtFeed, getPrismaArtFromDTO } from './services/artService';
+import { ArtWorkSchema } from '../../common/schemas';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -38,54 +12,39 @@ const prisma = new PrismaClient();
 // Middleware
 app.use(cors());
 app.use(express.json());
+app.use(clerkMiddleware());
 
 // Routes
 app.get('/', (_req, res) => {
     res.send("Hello, let's jam some art with Jammin'!");
 });
 
-app.get('/api/art-feed', async (_req: Request, res: Response) => {
+app.get("/protected", requireAuth({ signInUrl: "/sign-in" }), async (req: Request, res: Response) => {
     try {
-        const artFeed = await prisma.artWork.findMany({
-            orderBy: { createdAt: 'desc' },
-            include: {
-                author: true
-            }
-        });
-
-        const artWorks = artFeed.map((art) => {
-            // Convert the configuration JsonValue to ArtConfigurationInDB
-            const config = art.configuration as ArtConfigurationInDB;
-
-            return {
-                id: art.id,
-                userAvatar: art.author.avatar,
-                userName: art.author.username,
-                isAuthor: true,
-                authorId: art.authorId,
-                colorA: config.colorA,
-                colorB: config.colorB,
-                stripeCount: config.stripeCount,
-                style: config.style
-            };
-        });
-
-        res.status(200)
-        console.log({ message: 'Fetching art feed...', data: artWorks });
-        res.status(200).json(artWorks);
+        // Cast req to any to access auth property
+        const { userId } = (req as any).auth;
+        const user = await clerkClient.users.getUser(userId);
+        res.json({ user });
     } catch (error) {
-        console.error('Error fetching art feed:', error);
-        res.status(500)
-            .json({ error: 'Internal server error.' });
+        console.error('Error in protected route:', error);
+        res.status(401).json({ error: "Unauthorized access." });
     }
+});
+
+app.get('/api/art-feed', async (_req: Request, res: Response) => {
+    const artWorks = await getArtFeed();
+    res.status(200).json(artWorks);
 });
 
 app.get('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
+
         const artWork = await prisma.artWork.findUnique({
             where: { id }
         });
+
+
         if (!artWork) {
             return res.status(404).json({ error: 'Art work not found.' });
         }
@@ -99,53 +58,32 @@ app.get('/api/art-feed/:id', async (req: Request, res: Response) => {
     }
 });
 
-app.post('/api/art-feed', async (req: Request, res: Response) => {
-    try {
-        const artData = req.body as ArtWorkData;
+app.post('/api/art-feed', requireAuth(), async (req: Request, res: Response) => {
+    const { userId } = (req as any).auth;
+    const artData = req.body;
+    // USE ZOD TO VALIDATE UNKNOWN DATA FROM OVER THE WIRE.
+    // in this case the client.
+    const validatedArtData = ArtWorkSchema.parse(artData);
 
-        // Validate required fields
-        if (!artData.authorId) {
-            return res.status(400).json({ error: 'authorId is required' });
+    const newArtWork = await prisma.artWork.create({
+        data: getPrismaArtFromDTO(validatedArtData),
+        include: {
+            author: true
         }
+    });
 
-        // Ensure configuration fields are present
-        if (!artData.colorA || !artData.colorB || !artData.stripeCount || !artData.style) {
-            return res.status(400).json({ error: 'Missing required configuration fields' });
-        }
-
-        // Convert the incoming data to match the Prisma schema
-        const prismaArtData = {
-            configuration: {
-                colorA: artData.colorA,
-                colorB: artData.colorB,
-                stripeCount: artData.stripeCount,
-                style: artData.style
-            },
-            authorId: artData.authorId,
-            userAvatar: artData.userAvatar,
-            userName: artData.userName,
-            isAuthor: artData.isAuthor
-        };
-
-        const newArtWork = await prisma.artWork.create({
-            data: prismaArtData,
-            include: {
-                author: true
-            }
-        });
-
-        console.log({ message: 'Created art work...', data: newArtWork });
-        res.status(201).json(newArtWork);
-    } catch (error) {
-        console.error('Error creating art work:', error);
-        res.status(500).json({ error: 'Internal server error' });
-    }
+    console.log({ message: 'Created art work...', data: newArtWork });
+    res.status(201).json(newArtWork);
 });
 
-app.post("/api/art-feed/:id/like", async (req: Request, res: Response) => {
+app.post("/api/art-feed/:id/like", requireAuth(), async (req: Request, res: Response) => {
+    const { userId } = getAuth(req);
+    if (!userId) {
+        return res.status(401).json({ error: 'Unauthorized access.' });
+    }
     try {
         const { id: artWorkId } = req.params;
-        const { userId, isLiked } = req.body;
+        const { isLiked } = req.body;
 
         // Validate user exists
         const user = await prisma.user.findUnique({ where: { id: userId } });
