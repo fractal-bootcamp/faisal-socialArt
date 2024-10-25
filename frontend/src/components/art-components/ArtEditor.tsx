@@ -21,7 +21,7 @@ const ArtEditor: React.FC<ArtEditorProps> = ({
     userName,
     isEditing,
 }) => {
-    const [art, setArt] = useState(initialArt);
+    const [art, setArt] = useState({ ...initialArt });
 
     const handlePublish = () => {
         publishArt(art);

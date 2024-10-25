@@ -11,10 +11,6 @@ const meta: Meta<typeof Feed> = {
     },
     tags: ['autodocs'],
     argTypes: {
-        initialItems: {
-            control: 'object',
-            description: 'Array of initial feed items',
-        },
         userName: { control: 'text' },
         userAvatar: { control: 'text' },
         displayAsGrid: { control: 'boolean' },
@@ -31,26 +27,22 @@ const generateRandomFeedItem = (id: string): ArtType => ({
 });
 
 // Define stories for the Feed component
-export const EmptyFeed: Story = {
-    args: {
-        initialItems: [],
-        userName: 'Michael Scott',
-        userAvatar: 'https://github.com/shadcn.png',
-        displayAsGrid: false,
-    },
-};
-
 export const FeedWithThreeItems: Story = {
     args: {
-        initialItems: [
-            generateRandomFeedItem('1'),
-            generateRandomFeedItem('2'),
-            generateRandomFeedItem('3'),
-        ],
         userName: 'Michael Scott',
         userAvatar: 'https://github.com/shadcn.png',
         displayAsGrid: false,
     },
+    // Use the loaders property to set up initial data
+    loaders: [
+        async () => ({
+            feedItems: [
+                generateRandomFeedItem('1'),
+                generateRandomFeedItem('2'),
+                generateRandomFeedItem('3'),
+            ],
+        }),
+    ],
 };
 
 // Add a story for grid display
@@ -59,4 +51,5 @@ export const GridFeed: Story = {
         ...FeedWithThreeItems.args,
         displayAsGrid: true,
     },
+    loaders: FeedWithThreeItems.loaders,
 };

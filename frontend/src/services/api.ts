@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { ArtFeed, ArtType } from './artService';
+import { ArtType } from './artService';
 import { z } from 'zod';
 
 // Use the same port as the backend server
@@ -40,8 +40,6 @@ export const fetchArtFeed = async () => {
         // Parse the response data using the ArtWork schema
         // Parse each item in the response data array using the ArtWork schema
         const parsedResponse = z.array(ArtWorkSchema).parse(response.data);
-        // Comment: We use z.array() to parse an array of ArtWork objects
-        // Log the message and data as done in the backend
         console.log({ message: 'Fetching art feed...', data: response.data });
         return parsedResponse;
     } catch (error) {
@@ -54,46 +52,61 @@ export const fetchArtFeed = async () => {
 
 // Function to create new art
 export const createArt = async (artData: ArtType) => {
+    console.log('Creating art with data:', artData);
     // Convert the incoming data to match the Prisma schema
     const prismaArtData = {
-        configuration: artData,
-        authorId: artData.authorId // Assuming the authorId is provided in the request
+        configuration: {
+            colorA: artData.colorA,
+            colorB: artData.colorB,
+            stripeCount: artData.stripeCount,
+            style: artData.style
+        },
+        authorId: artData.authorId,
+        userAvatar: artData.userAvatar,
+        userName: artData.userName,
+        isAuthor: artData.isAuthor
     };
 
-    // Use the correct endpoint as defined in server.ts
-    // you must have typed responses.
-    const response = await api.post('/art-feed', prismaArtData);
+    console.log('Sending prismaArtData to server:', prismaArtData);
 
-    // Define the ArtWork schema inline
-    const ArtWorkSchema = z.object({
-        id: z.string(),
-        userAvatar: z.string(),
-        userName: z.string(),
-        isAuthor: z.boolean(),
-        authorId: z.string(),
-        colorA: z.object({
-            h: z.number(),
-            s: z.number(),
-            b: z.number()
-        }),
-        colorB: z.object({
-            h: z.number(),
-            s: z.number(),
-            b: z.number()
-        }),
-        stripeCount: z.number(),
-        style: z.enum(['line', 'circle'])
-    });
+    try {
+        // Use the correct endpoint as defined in server.ts
+        const response = await api.post('/art-feed', prismaArtData);
+        console.log('Server response:', response.data);
 
-    // Parse the response data using the ArtWork schema
-    const parsedResponse = ArtWorkSchema.parse(response.data);
+        // Define the ArtWork schema inline
+        const ArtWorkSchema = z.object({
+            id: z.string(),
+            userAvatar: z.string(),
+            userName: z.string(),
+            isAuthor: z.boolean(),
+            authorId: z.string(),
+            colorA: z.object({
+                h: z.number(),
+                s: z.number(),
+                b: z.number()
+            }),
+            colorB: z.object({
+                h: z.number(),
+                s: z.number(),
+                b: z.number()
+            }),
+            stripeCount: z.number(),
+            style: z.enum(['line', 'circle'])
+        });
 
-    // Log the parsed response for debugging
-    console.log('Parsed response:', parsedResponse);
+        // Parse the response data using the ArtWork schema
+        const parsedResponse = ArtWorkSchema.parse(response.data);
 
-    // Return the typed response
-    console.log('Art created successfully...');
-    return parsedResponse;
+        console.log('Parsed response:', parsedResponse);
+
+        // Return the typed response
+        console.log('Art created successfully...');
+        return parsedResponse;
+    } catch (error) {
+        console.error('Error in createArt:', error);
+        throw error;
+    }
 };
 
 // Function to update existing art

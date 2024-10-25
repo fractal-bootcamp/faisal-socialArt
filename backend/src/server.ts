@@ -1,23 +1,10 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { ArtWork, PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 
-const app = express();
-const port = process.env.PORT || 3000;
-const prisma = new PrismaClient();
+type ArtStyle = "line" | "circle";
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-
-// Routes
-app.get('/', (_req, res) => {
-    res.send("Hello, Jammin's Art Feed!");
-});
-
-export type ArtStyle = "line" | "circle";
-
-type ArtWorkDTO = {
+type ArtWorkData = {
     id: string;
     userAvatar: string;
     userName: string;
@@ -41,8 +28,21 @@ type ArtConfigurationInDB = {
         b: number;
     };
     stripeCount: number;
-    style: string;
+    style: ArtStyle;
 }
+
+const app = express();
+const port = process.env.PORT || 3000;
+const prisma = new PrismaClient();
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.get('/', (_req, res) => {
+    res.send("Hello, let's jam some art with Jammin'!");
+});
 
 app.get('/api/art-feed', async (_req: Request, res: Response) => {
     try {
@@ -101,22 +101,53 @@ app.get('/api/art-feed/:id', async (req: Request, res: Response) => {
 
 app.post('/api/art-feed', async (req: Request, res: Response) => {
     try {
-        const artData = req.body;
+        const artData = req.body as ArtWorkData;
+
+        // Validate required fields
+        if (!artData.authorId) {
+            return res.status(400).json({ error: 'authorId is required' });
+        }
+
+        // Ensure configuration fields are present
+        if (!artData.colorA || !artData.colorB || !artData.stripeCount || !artData.style) {
+            return res.status(400).json({ error: 'Missing required configuration fields' });
+        }
+
         // Convert the incoming data to match the Prisma schema
         const prismaArtData = {
-            configuration: artData,
-            authorId: artData.authorId // Assuming the authorId is provided in the request
+            configuration: {
+                colorA: artData.colorA,
+                colorB: artData.colorB,
+                stripeCount: artData.stripeCount,
+                style: artData.style
+            },
+            authorId: artData.authorId,
+            userAvatar: artData.userAvatar,
+            userName: artData.userName,
+            isAuthor: artData.isAuthor
         };
+
         const newArtWork = await prisma.artWork.create({
-            data: prismaArtData
+            data: prismaArtData,
+            include: {
+                author: true
+            }
         });
-        res.status(201)
+
         console.log({ message: 'Created art work...', data: newArtWork });
-        res.status(201).json(newArtWork); // Send the new artwork as the response
+        res.status(201).json(newArtWork);
     } catch (error) {
         console.error('Error creating art work:', error);
-        res.status(500)
-            .json({ error: 'Internal server error.' });
+
+        // Provide more detailed error information
+        if (error instanceof Error) {
+            res.status(500).json({
+                error: 'Internal server error',
+                message: error.message,
+            });
+        } else {
+            res.status(500).json({ error: 'An unexpected error occurred' });
+        }
     }
 });
 
@@ -160,6 +191,8 @@ app.delete('/api/art-feed/:id', async (req: Request, res: Response) => {
 app.get('/api/profile/:userName', async (req: Request, res: Response) => {
     try {
         const { userName } = req.params;
+        console.log(`Attempting to fetch profile for user: ${userName}`); // Log the username being queried
+
         // Fetch user profile and their artwork
         const userProfile = await prisma.user.findUnique({
             where: { username: userName },
@@ -170,7 +203,10 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
             }
         });
 
+        console.log('Query result:', userProfile); // Log the entire query result
+
         if (!userProfile) {
+            console.log(`User not found: ${userName}`); // Log when user is not found
             return res.status(404).json({ error: 'User not found.' });
         }
 

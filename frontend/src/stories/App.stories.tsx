@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import App from '../App';
+import RootLayout from '../RootLayout';
 import { SidebarProvider } from '../components/ui/sidebar';
 import { BrowserRouter } from 'react-router-dom';
 
 // Meta object for the App component
-const meta: Meta<typeof App> = {
+const meta: Meta<typeof RootLayout> = {
     title: 'App',
-    component: App,
+    component: RootLayout,
     parameters: {
         layout: 'fullscreen',
     },
@@ -15,7 +15,7 @@ const meta: Meta<typeof App> = {
 export default meta;
 
 // Define the Story type
-type Story = StoryObj<typeof App>;
+type Story = StoryObj<typeof RootLayout>;
 
 // Default story with props matching the App component
 export const Default: Story = {

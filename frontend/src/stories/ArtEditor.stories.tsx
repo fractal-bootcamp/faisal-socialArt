@@ -24,6 +24,8 @@ type Story = StoryObj<typeof ArtEditor>;
 const defaultArt: ArtWork = {
     id: '1',
     userName: '',
+    userAvatar: '',
+    authorId: '',
     isAuthor: false,
     colorA: { h: 0, s: 100, b: 100 },
     colorB: { h: 240, s: 100, b: 100 },
