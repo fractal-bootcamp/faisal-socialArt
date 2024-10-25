@@ -2,7 +2,6 @@ import axios from 'axios';
 import { ArtType } from './artService';
 import { z } from 'zod';
 
-// Use the same port as the backend server
 const port = 3000;
 const API_BASE_URL = `http://localhost:${port}/api`;
 
@@ -11,126 +10,72 @@ const api = axios.create({
     baseURL: API_BASE_URL,
 });
 
-// Function to fetch art feed
-export const fetchArtFeed = async () => {
-    try {
-        // Use the correct endpoint as defined in server.ts
-        const response = await api.get('/art-feed');
-        // Define the ArtWork schema inline
-        const ArtWorkSchema = z.object({
-            id: z.string(),
-            userAvatar: z.string(),
-            userName: z.string(),
-            isAuthor: z.boolean(),
-            authorId: z.string(),
-            colorA: z.object({
-                h: z.number(),
-                s: z.number(),
-                b: z.number()
-            }),
-            colorB: z.object({
-                h: z.number(),
-                s: z.number(),
-                b: z.number()
-            }),
-            stripeCount: z.number(),
-            style: z.enum(['line', 'circle'])
-        });
+// Define the ArtWork schema
+const ArtWorkSchema = z.object({
+    id: z.string(),
+    userAvatar: z.string(),
+    userName: z.string(),
+    isAuthor: z.boolean(),
+    authorId: z.string(),
+    colorA: z.object({
+        h: z.number(),
+        s: z.number(),
+        b: z.number()
+    }),
+    colorB: z.object({
+        h: z.number(),
+        s: z.number(),
+        b: z.number()
+    }),
+    stripeCount: z.number(),
+    style: z.enum(['line', 'circle'])
+});
 
-        // Parse the response data using the ArtWork schema
-        // Parse each item in the response data array using the ArtWork schema
-        const parsedResponse = z.array(ArtWorkSchema).parse(response.data);
-        console.log({ message: 'Fetching art feed...', data: response.data });
-        return parsedResponse;
+type ArtWork = z.infer<typeof ArtWorkSchema>;
+
+type Route = '/art-feed' | `/art-feed/${string}` | `/profile/${string}` | `/art-feed/${string}/like`;
+
+const LikeResponseSchema = z.object({
+    likeCount: z.number()
+});
+
+export type LikeResponse = z.infer<typeof LikeResponseSchema>;
+
+// Helper function to handle errors
+const handleError = (error: unknown, errorMessage?: string): never => {
+    console.error(error);
+    throw new Error(errorMessage || 'An error occurred');
+};
+
+const apiCall = async <T>(
+    method: 'get' | 'post' | 'put' | 'delete',
+    url: Route,
+    data?: unknown,
+    schema?: z.ZodType<T>,
+    errorMessage?: string
+): Promise<T> => {
+    try {
+        const response = await api[method](url, data);
+        return schema ? schema.parse(response.data) : response.data as T;
     } catch (error) {
-        // Match the error logging in the backend
-        console.error('Error fetching art feed:', error);
-        // Throw a more specific error to match the backend response
-        throw new Error('Internal server error.');
+        throw handleError(error, errorMessage);
     }
 };
 
-// Function to create new art
-export const createArt = async (artData: ArtType) => {
-    console.log('Creating art with data:', artData);
-    // Convert the incoming data to match the Prisma schema
-    const prismaArtData = {
-        configuration: {
-            colorA: artData.colorA,
-            colorB: artData.colorB,
-            stripeCount: artData.stripeCount,
-            style: artData.style
-        },
-        authorId: artData.authorId,
-        userAvatar: artData.userAvatar,
-        userName: artData.userName,
-        isAuthor: artData.isAuthor
-    };
+export const fetchArtFeed = () =>
+    apiCall<ArtWork[]>('get', '/art-feed', undefined, z.array(ArtWorkSchema), 'Failed to fetch art feed.');
 
-    console.log('Sending prismaArtData to server:', prismaArtData);
+export const createArt = (artData: ArtType) =>
+    apiCall<ArtWork>('post', '/art-feed', artData, ArtWorkSchema, 'Failed to create art.');
 
-    try {
-        // Use the correct endpoint as defined in server.ts
-        const response = await api.post('/art-feed', prismaArtData);
-        console.log('Server response:', response.data);
+export const updateArt = (id: string, artData: Partial<ArtType>) =>
+    apiCall<ArtWork>('put', `/art-feed/${id}`, { configuration: artData }, ArtWorkSchema, 'Failed to update art.');
 
-        // Define the ArtWork schema inline
-        const ArtWorkSchema = z.object({
-            id: z.string(),
-            userAvatar: z.string(),
-            userName: z.string(),
-            isAuthor: z.boolean(),
-            authorId: z.string(),
-            colorA: z.object({
-                h: z.number(),
-                s: z.number(),
-                b: z.number()
-            }),
-            colorB: z.object({
-                h: z.number(),
-                s: z.number(),
-                b: z.number()
-            }),
-            stripeCount: z.number(),
-            style: z.enum(['line', 'circle'])
-        });
+export const updateLike = (id: string, isLiked: boolean, userId: string) =>
+    apiCall<LikeResponse>('post', `/art-feed/${id}/like`, { isLiked, userId }, LikeResponseSchema, 'Failed to update like.');
 
-        // Parse the response data using the ArtWork schema
-        const parsedResponse = ArtWorkSchema.parse(response.data);
+export const deleteArt = (id: string) =>
+    apiCall<void>('delete', `/art-feed/${id}`, undefined, undefined, 'Failed to delete art.');
 
-        console.log('Parsed response:', parsedResponse);
-
-        // Return the typed response
-        console.log('Art created successfully...');
-        return parsedResponse;
-    } catch (error) {
-        console.error('Error in createArt:', error);
-        throw error;
-    }
-};
-
-// Function to update existing art
-export const updateArt = async (id: string, artData: ArtType) => {
-    try {
-        // Use the correct endpoint as defined in server.ts
-        const response = await api.put(`/art-feed/${id}`, artData);
-        console.log('Art updated successfully...');
-        return response.data;
-    } catch (error) {
-        console.error('Error updating art:', error);
-        throw error;
-    }
-};
-
-// Function to delete art
-export const deleteArt = async (id: string) => {
-    try {
-        // Use the correct endpoint as defined in server.ts
-        const response = await api.delete(`/art-feed/${id}`);
-        console.log('Art deleted successfully...');
-        return response.data;
-    } catch (error) {
-        console.error('Error deleting art:', error);
-        throw error;
-    }
-};
+export const fetchUserArtwork = (userName: string) =>
+    apiCall<ArtWork[]>('get', `/profile/${userName}`, undefined, z.array(ArtWorkSchema), 'Failed to fetch user artwork.');

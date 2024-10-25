@@ -138,41 +138,56 @@ app.post('/api/art-feed', async (req: Request, res: Response) => {
         res.status(201).json(newArtWork);
     } catch (error) {
         console.error('Error creating art work:', error);
-
-        // Provide more detailed error information
-        if (error instanceof Error) {
-            res.status(500).json({
-                error: 'Internal server error',
-                message: error.message,
-            });
-        } else {
-            res.status(500).json({ error: 'An unexpected error occurred' });
-        }
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
 app.post("/api/art-feed/:id/like", async (req: Request, res: Response) => {
     try {
-        const { id } = req.params;
-        const { isLiked, userId } = req.body;
+        const { id: artWorkId } = req.params;
+        const { userId, isLiked } = req.body;
 
-        const artWork = await prisma.artWork.update({
-            where: { id },
-            data: {
-                likes: {
-                    [isLiked ? 'create' : 'deleteMany']: isLiked
-                        ? { userId }
-                        : { userId }
+        // Validate user exists
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Validate artwork exists
+        const artwork = await prisma.artWork.findUnique({ where: { id: artWorkId } });
+        if (!artwork) {
+            return res.status(404).json({ error: 'Artwork not found.' });
+        }
+
+        if (isLiked) {
+            await prisma.like.upsert({
+                where: {
+                    userId_artWorkId: {
+                        userId: userId,
+                        artWorkId: artWorkId
+                    }
+                },
+                update: {},
+                create: { userId: userId, artWorkId: artWorkId }
+            });
+        } else {
+            // Remove like
+            await prisma.like.delete({
+                where: {
+                    userId_artWorkId: {
+                        userId: userId,
+                        artWorkId: artWorkId
+                    }
                 }
-            },
-            include: {
-                likes: true
-            }
+            });
+        }
+        const updatedArtwork = await prisma.artWork.findUnique({
+            where: { id: artWorkId },
+            include: { likes: true }
         });
-
-        res.status(200).json({ artWork });
+        res.status(200).json({ likeCount: updatedArtwork?.likes.length || 0 });
     } catch (error) {
-        console.error('Error updating like count:', error);
+        console.error('Error updating like:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
 });
@@ -180,21 +195,23 @@ app.post("/api/art-feed/:id/like", async (req: Request, res: Response) => {
 app.put('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const artData = req.body; // this bad. use ZOD to validate the data every time. for the rest of your life.
-        // Convert the incoming data to match the Prisma schema
-        const prismaArtData = {
-            configuration: artData
-        };
+        const artData = req.body;
+
         const updatedArtWork = await prisma.artWork.update({
             where: { id },
-            data: prismaArtData
+            data: {
+                configuration: artData,
+                userAvatar: artData.userAvatar,
+                userName: artData.userName,
+                isAuthor: artData.isAuthor,
+                authorId: artData.authorId
+            }
         });
-        res.status(200)
-            .json({ message: 'Updated art work...', data: updatedArtWork });
+
+        res.status(200).json(updatedArtWork);
     } catch (error) {
         console.error('Error updating art work:', error);
-        res.status(500)
-            .json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
@@ -212,6 +229,47 @@ app.delete('/api/art-feed/:id', async (req: Request, res: Response) => {
         res.status(200).json({ message: 'Art deleted successfully', deletedArt });
     } catch (error) {
         console.error('Error in delete operation:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
+    }
+});
+
+app.delete('/api/art-feed/:id/like', async (req: Request, res: Response) => {
+    try {
+        const { id: artWorkId } = req.params;
+        const { userId } = req.body;
+
+        // Validate user exists
+        const user = await prisma.user.findUnique({ where: { id: userId } });
+        if (!user) {
+            return res.status(404).json({ error: 'User not found.' });
+        }
+
+        // Validate artwork exists
+        const artwork = await prisma.artWork.findUnique({
+            where: { id: artWorkId }
+        });
+        if (!artwork) {
+            return res.status(404).json({ error: 'Artwork not found.' });
+        }
+
+        // Remove like
+        await prisma.like.delete({
+            where: {
+                userId_artWorkId: {
+                    userId: userId,
+                    artWorkId: artWorkId
+                }
+            }
+        });
+
+        // Fetch and update artwork with new like count
+        const updatedArtwork = await prisma.artWork.findUnique({
+            where: { id: artWorkId },
+            include: { likes: true }
+        });
+        res.status(200).json({ likeCount: updatedArtwork?.likes.length || 0 });
+    } catch (error) {
+        console.error('Error in delete like operation:', error);
         res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 });
@@ -240,10 +298,10 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
         }
 
         // Remove sensitive information like password before sending the response
-        const { ...safeUserProfile } = userProfile;
+        const { id, username, artWorks } = userProfile;
 
-        console.log({ message: 'Fetching user profile and artwork...', data: safeUserProfile });
-        res.status(200).json(safeUserProfile);
+        console.log({ message: 'Fetching user profile and artwork...', data: { id, username, artWorks } });
+        res.status(200).json({ id, username, artWorks });
     } catch (error) {
         console.error('Error fetching user profile and artwork:', error);
         res.status(500).json({ error: 'Internal server error.' });

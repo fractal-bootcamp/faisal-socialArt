@@ -5,7 +5,7 @@ import ArtEditor from './ArtEditor';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Heart, Edit, Trash2 } from 'lucide-react';
-//import { updateLike } from '../../services/api';
+import { updateLike } from '../../services/api';
 import {
     AlertDialog,
     AlertDialogAction,
@@ -32,6 +32,7 @@ interface FeedPostProps {
     isEditing?: boolean;
     displayAsGrid?: boolean;
     isProfilePage?: boolean;
+    userId?: string;
 }
 
 const FeedPost: React.FC<FeedPostProps> = ({
@@ -42,7 +43,8 @@ const FeedPost: React.FC<FeedPostProps> = ({
     onEdit,
     onDelete,
     displayAsGrid = false,
-    isProfilePage = false
+    isProfilePage = false,
+    userId // Add this prop
 }) => {
     const [isEditingState, setIsEditingState] = useState(false);
     const [isLiked, setIsLiked] = useState(false);
@@ -53,12 +55,27 @@ const FeedPost: React.FC<FeedPostProps> = ({
         setIsEditingState(true);
     };
 
-    const handleLike = () => {
+    const handleLike = async () => {
+        if (!userId) {
+            toast.error('You must be logged in to like artworks');
+            return;
+        }
+
         const newIsLiked = !isLiked;
         setIsLiked(newIsLiked);
         setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
-        updateLike(art.id, newIsLiked);
-        toast.success(newIsLiked ? 'Liked!' : 'Unliked!');
+
+        try {
+            const response = await updateLike(art.id, newIsLiked, userId);
+            setLikesCount(response.likeCount);
+            toast.success(newIsLiked ? 'Liked!' : 'Unliked!');
+        } catch (error) {
+            // Revert the like status and count
+            setIsLiked(!newIsLiked);
+            setLikesCount(prevCount => !newIsLiked ? prevCount + 1 : prevCount - 1);
+            toast.error('Failed to update like status. Please try again.');
+            console.error('Error updating like:', error);
+        }
     };
 
     const handlePublish = (updatedArt: ArtType) => {
