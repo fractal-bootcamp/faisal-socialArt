@@ -21,8 +21,6 @@ const Feed: React.FC<FeedProps> = ({
             try {
                 // Fetch art items from the API
                 const fetchedArtItems = await fetchArtFeed();
-
-                // Ensure fetchedArtItems is of type ArtFeed[]
                 if (Array.isArray(fetchedArtItems)) {
                     setFeedItems(fetchedArtItems.map((item: ArtWork) => ({
                         id: item.id,
@@ -34,6 +32,7 @@ const Feed: React.FC<FeedProps> = ({
                         colorB: item.colorB,
                         stripeCount: item.stripeCount,
                         style: item.style,
+                        //likeCount: item.likes.length,
                     })));
                 } else {
                     console.error('Fetched art items are not in the expected format');
@@ -49,15 +48,26 @@ const Feed: React.FC<FeedProps> = ({
     // Handle publishing new art
     const handlePublishArt = async (newArt: ArtType) => {
         console.log('handlePublishArt called with:', newArt);
+
+        const artWithAuthor = {
+            ...newArt,
+            userAvatar: newArt.userAvatar || '',
+            userName: newArt.userName || '',
+            authorId: newArt.authorId || '',
+            isAuthor: true,
+        };
+
+        if (!artWithAuthor.authorId) {
+            console.error('Author ID is missing!');
+            toast.error('Cannot publish art without an author.');
+            return;
+        }
+
         try {
-            const artWithAuthor = {
-                ...newArt,
-                isAuthor: true,
-            };
             console.log('Calling createArt with:', artWithAuthor);
             const createdArt = await createArt(artWithAuthor);
             console.log('Art created successfully:', createdArt);
-            setFeedItems(prevItems => [createdArt, ...prevItems]);
+            setFeedItems((prevItems) => [createdArt, ...prevItems]);
             setEditingArt(null);
             toast.success('Art published successfully!');
         } catch (error) {
@@ -79,12 +89,27 @@ const Feed: React.FC<FeedProps> = ({
 
     // Handle deleting art
     const handleDelete = async (artId: string) => {
+        console.log('Attempting to delete art with ID:', artId);
+        console.log('Current feed items:', feedItems);
         try {
-            await deleteArt(artId);
-            setFeedItems(prevItems => prevItems.filter(item => item.id !== artId));
+            const response = await deleteArt(artId);
+            console.log('Delete API response:', response);
+
+            setFeedItems(prevItems => {
+                const newItems = prevItems.filter(item => item.id !== artId);
+                console.log('New feed items after deletion:', newItems);
+                console.log('Removed item:', prevItems.find(item => item.id === artId));
+                return newItems;
+            });
+
             toast.success('Art deleted successfully!');
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error deleting art:', error);
+            console.log('Error details:', {
+                message: error.message,
+                stack: error.stack,
+                response: error.response
+            });
             toast.error('Failed to delete art. Please try again.');
         }
     };

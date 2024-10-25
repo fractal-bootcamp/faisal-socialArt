@@ -151,6 +151,32 @@ app.post('/api/art-feed', async (req: Request, res: Response) => {
     }
 });
 
+app.post("/api/art-feed/:id/like", async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const { isLiked, userId } = req.body;
+
+        const artWork = await prisma.artWork.update({
+            where: { id },
+            data: {
+                likes: {
+                    [isLiked ? 'create' : 'deleteMany']: isLiked
+                        ? { userId }
+                        : { userId }
+                }
+            },
+            include: {
+                likes: true
+            }
+        });
+
+        res.status(200).json({ artWork });
+    } catch (error) {
+        console.error('Error updating like count:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 app.put('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
@@ -175,15 +201,18 @@ app.put('/api/art-feed/:id', async (req: Request, res: Response) => {
 app.delete('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        await prisma.artWork.delete({
-            where: { id }
+        console.log(`Attempting to delete art with ID: ${id}`);
+
+        // Use Prisma to delete the artwork
+        const deletedArt = await prisma.artWork.delete({
+            where: { id: id }
         });
-        res.status(200)
-            .json({ message: 'Deleted art work...' });
+
+        console.log(`Delete result:`, deletedArt);
+        res.status(200).json({ message: 'Art deleted successfully', deletedArt });
     } catch (error) {
-        console.error('Error deleting art work:', error);
-        res.status(500)
-            .json({ error: 'Internal server error' });
+        console.error('Error in delete operation:', error);
+        res.status(500).json({ message: 'Internal server error', error: error.message });
     }
 });
 
