@@ -8,7 +8,9 @@ import Feed from './components/art-components/Feed'
 
 const userName = "Faisal Owimer"
 const userAvatar = "https://github.com/faisalowimer.png"
-const companyName = "Jammin"
+const authorId = "123"
+const companyName = "Jammin'"
+const isAuthor = true
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -16,15 +18,15 @@ const router = createBrowserRouter([
   {
     path: "/",
     element:
-      <RootLayout userName={userName} userAvatar={userAvatar} companyName={companyName} />,
+      <RootLayout userName={userName} userAvatar={userAvatar} authorId={authorId} companyName={companyName} isAuthor={isAuthor} />,
     children: [
       {
         path: "art-feed",
-        element: <Feed userName={""} userAvatar={""} />
+        element: <Feed userName={userName} userAvatar={""} />
       },
       {
         path: "profile",
-        element: <ProfilePage userArts={[]} userName={""} userAvatar={""} />
+        element: <ProfilePage userArts={[]} userName={userName} userAvatar={userAvatar} />
       }
     ]
   }

@@ -7,14 +7,10 @@ import { Toaster, toast } from 'sonner';
 import { createArt, deleteArt, fetchArtFeed, updateArt } from '@/services/api';
 
 interface FeedProps {
-    userName: string;
-    userAvatar: string;
     displayAsGrid?: boolean;
 }
 
 const Feed: React.FC<FeedProps> = ({
-    userName,
-    userAvatar,
     displayAsGrid = false,
 }) => {
     const [feedItems, setFeedItems] = useState<ArtType[]>([]);
@@ -52,9 +48,16 @@ const Feed: React.FC<FeedProps> = ({
 
     // Handle publishing new art
     const handlePublishArt = async (newArt: ArtType) => {
+        console.log('handlePublishArt called with:', newArt);
         try {
-            await createArt(newArt);
-            setFeedItems(prevItems => [newArt, ...prevItems]);
+            const artWithAuthor = {
+                ...newArt,
+                isAuthor: true,
+            };
+            console.log('Calling createArt with:', artWithAuthor);
+            const createdArt = await createArt(artWithAuthor);
+            console.log('Art created successfully:', createdArt);
+            setFeedItems(prevItems => [createdArt, ...prevItems]);
             setEditingArt(null);
             toast.success('Art published successfully!');
         } catch (error) {
@@ -66,7 +69,12 @@ const Feed: React.FC<FeedProps> = ({
     // Generate new random art
     const handleAddNewItem = () => {
         const newArt = generateRandomArt();
-        setEditingArt(newArt);
+        setEditingArt({
+            ...newArt,
+            userAvatar: newArt.userAvatar,
+            userName: newArt.userName,
+            isAuthor: true,
+        });
     };
 
     // Handle deleting art
@@ -109,15 +117,14 @@ const Feed: React.FC<FeedProps> = ({
                 </div>
                 <div className={`w-full ${displayAsGrid ? 'max-w-4xl grid grid-cols-3 gap-4' : 'max-w-md space-y-6'}`}>
                     {feedItems.map((item) => {
-                        // Log each item for debugging purposes
-                        console.log('Rendering FeedPost for item:', item);
                         return (
                             <FeedPost
                                 key={item.id}
                                 art={item}
-                                userAvatar={item.userAvatar || userAvatar}
-                                userName={item.userName || userName}
-                                isAuthor={item.userName === userName} // Assuming userName is actually the user's ID
+                                userAvatar={item.userAvatar}
+                                userName={item.userName}
+                                authorId={item.authorId}
+                                isAuthor={item.isAuthor}
                                 onLike={() => { }} // Placeholder for like functionality
                                 onEdit={handleEdit}
                                 onDelete={() => handleDelete(item.id)}
@@ -132,9 +139,9 @@ const Feed: React.FC<FeedProps> = ({
                         initialArt={editingArt}
                         publishArt={handlePublishArt}
                         onClose={() => setEditingArt(null)}
-                        userAvatar={userAvatar}
+                        userAvatar={editingArt.userAvatar}
+                        userName={editingArt.userName}
                         isEditing={false}
-                        userName={userName}
                     />
                 )}
             </div>

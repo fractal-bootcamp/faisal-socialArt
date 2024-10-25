@@ -1,4 +1,3 @@
-import React, { useState, useEffect } from 'react';
 import { Outlet } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import PageSidebar from './components/web-pages/PageSideBar';
@@ -7,11 +6,15 @@ interface RootLayoutProps {
   userName: string;
   userAvatar: string;
   companyName: string;
+  authorId: string;
+  isAuthor: boolean;
 }
 
 const RootLayout: React.FC<RootLayoutProps> = ({
   userName,
   userAvatar,
+  authorId,
+  isAuthor,
   companyName
 }) => {
 
@@ -24,6 +27,8 @@ const RootLayout: React.FC<RootLayoutProps> = ({
           <Outlet context={{
             userName,
             userAvatar,
+            authorId,
+            isAuthor,
           }} />
         </main>
       </div>

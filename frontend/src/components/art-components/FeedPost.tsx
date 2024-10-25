@@ -22,6 +22,7 @@ interface FeedPostProps {
     art: ArtType & { likeCount?: number };
     userAvatar: string;
     userName: string;
+    authorId: string;
     isAuthor: boolean;
     onLike: () => void;
     onEdit: (updatedArt: ArtType) => void;
@@ -36,7 +37,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
     userAvatar,
     userName,
     isAuthor,
-    onLike,
+    // onLike,
     onEdit,
     onDelete,
     displayAsGrid = false,
@@ -55,7 +56,7 @@ const FeedPost: React.FC<FeedPostProps> = ({
         const newIsLiked = !isLiked;
         setIsLiked(newIsLiked);
         setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
-        onLike();
+        // onLike(newIsLiked);
         if (newIsLiked) {
             toast.success('Liked!');
         } else {
@@ -209,12 +210,11 @@ const FeedPost: React.FC<FeedPostProps> = ({
                     )}
                 </div>
             </div>
-
             {isEditingState && (
                 <ArtEditor
-                    userAvatar={userAvatar || ''}
-                    userName={userName || ''}
                     initialArt={currentArt}
+                    userAvatar={userAvatar}
+                    userName={userName}
                     publishArt={handlePublish}
                     onClose={() => setIsEditingState(false)}
                     isEditing={isEditingState}

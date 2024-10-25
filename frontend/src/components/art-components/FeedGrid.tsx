@@ -83,6 +83,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                         art={item}
                         userAvatar={userAvatar}
                         userName={userName}
+                        authorId={item.authorId}
                         isAuthor={true}
                         onLike={() => { }} // Placeholder for like functionality
                         onEdit={handleEdit}
