@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
-import { PrismaClient } from '@prisma/client';
+import { ArtWork, PrismaClient } from '@prisma/client';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -15,14 +15,64 @@ app.get('/', (_req, res) => {
     res.send("Hello, Jammin's Art Feed!");
 });
 
+export type ArtStyle = "line" | "circle";
+
+type ArtWorkDTO = {
+    id: string;
+    userAvatar: string;
+    userName: string;
+    isAuthor: boolean;
+    authorId: string;
+    colorA: { h: number, s: number, b: number };
+    colorB: { h: number, s: number, b: number };
+    stripeCount: number;
+    style: ArtStyle;
+}
+
+type ArtConfigurationInDB = {
+    colorA: {
+        h: number;
+        s: number;
+        b: number;
+    };
+    colorB: {
+        h: number;
+        s: number;
+        b: number;
+    };
+    stripeCount: number;
+    style: string;
+}
+
 app.get('/api/art-feed', async (_req: Request, res: Response) => {
     try {
         const artFeed = await prisma.artWork.findMany({
-            orderBy: { createdAt: 'desc' }
+            orderBy: { createdAt: 'desc' },
+            include: {
+                author: true
+            }
         });
+
+        const artWorks = artFeed.map((art) => {
+            // Convert the configuration JsonValue to ArtConfigurationInDB
+            const config = art.configuration as ArtConfigurationInDB;
+
+            return {
+                id: art.id,
+                userAvatar: art.author.avatar,
+                userName: art.author.username,
+                isAuthor: true,
+                authorId: art.authorId,
+                colorA: config.colorA,
+                colorB: config.colorB,
+                stripeCount: config.stripeCount,
+                style: config.style
+            };
+        });
+
         res.status(200)
-        console.log({ message: 'Fetching art feed...', data: artFeed });
-        res.status(200).json(artFeed);
+        console.log({ message: 'Fetching art feed...', data: artWorks });
+        res.status(200).json(artWorks);
     } catch (error) {
         console.error('Error fetching art feed:', error);
         res.status(500)
@@ -73,7 +123,7 @@ app.post('/api/art-feed', async (req: Request, res: Response) => {
 app.put('/api/art-feed/:id', async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const artData = req.body;
+        const artData = req.body; // this bad. use ZOD to validate the data every time. for the rest of your life.
         // Convert the incoming data to match the Prisma schema
         const prismaArtData = {
             configuration: artData

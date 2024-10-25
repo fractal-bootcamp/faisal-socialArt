@@ -1,14 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
-import App from './App'
 import './index.css'
-import FeedPage from './components/web-pages/FeedPage'
 import ProfilePage from './components/web-pages/ProfilePage'
+import RootLayout from './RootLayout'
+import Feed from './components/art-components/Feed'
 
-const userName = "Michael Scott"
-const userAvatar = "https://github.com/shadcn.png"
-const companyName = "Jammin'"
+const userName = "Faisal Owimer"
+const userAvatar = "https://github.com/faisalowimer.png"
+const companyName = "Jammin"
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -16,19 +16,15 @@ const router = createBrowserRouter([
   {
     path: "/",
     element:
-      <App
-        userName={userName}
-        userAvatar={userAvatar}
-        companyName={companyName}
-      />,
+      <RootLayout userName={userName} userAvatar={userAvatar} companyName={companyName} />,
     children: [
       {
         path: "art-feed",
-        element: <FeedPage userName={userName} userAvatar={userAvatar} handleDeleteArt={() => { }} onEditArt={() => { }} />
+        element: <Feed userName={""} userAvatar={""} />
       },
       {
         path: "profile",
-        element: <ProfilePage userName={userName} userAvatar={userAvatar} userArts={[]} />
+        element: <ProfilePage userArts={[]} userName={""} userAvatar={""} />
       }
     ]
   }

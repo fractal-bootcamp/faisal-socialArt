@@ -17,6 +17,7 @@ export type ArtType = ArtWork;
 
 export interface ArtWork {
     id: string;
+    userAvatar: string;
     userName: string;
     isAuthor: boolean;
     authorId: string;
@@ -49,7 +50,8 @@ export function updateFeed(art: ArtWork, artFeed: ArtFeed): ArtFeed {
 
 export function generateRandomArt(): ArtType {
     return {
-        id: "",
+        id: uuidv4(),
+        userAvatar: "",
         userName: "",
         isAuthor: false,
         authorId: "",
