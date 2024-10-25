@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ArtType } from './artService';
 import { z } from 'zod';
+import { ArtWorkSchema } from '../../../common/schemas';
 
 const port = 3000;
 const API_BASE_URL = `http://localhost:${port}/api`;
@@ -10,28 +11,12 @@ const api = axios.create({
     baseURL: API_BASE_URL,
 });
 
+
 // Define the ArtWork schema
-const ArtWorkSchema = z.object({
-    id: z.string(),
-    userAvatar: z.string(),
-    userName: z.string(),
-    isAuthor: z.boolean(),
-    authorId: z.string(),
-    colorA: z.object({
-        h: z.number(),
-        s: z.number(),
-        b: z.number()
-    }),
-    colorB: z.object({
-        h: z.number(),
-        s: z.number(),
-        b: z.number()
-    }),
-    stripeCount: z.number(),
-    style: z.enum(['line', 'circle'])
-});
 
 type ArtWork = z.infer<typeof ArtWorkSchema>;
+
+type Method = 'get' | 'post' | 'put' | 'delete';
 
 type Route = '/art-feed' | `/art-feed/${string}` | `/profile/${string}` | `/art-feed/${string}/like`;
 
@@ -48,7 +33,7 @@ const handleError = (error: unknown, errorMessage?: string): never => {
 };
 
 const apiCall = async <T>(
-    method: 'get' | 'post' | 'put' | 'delete',
+    method: Method,
     url: Route,
     data?: unknown,
     schema?: z.ZodType<T>,
@@ -69,10 +54,10 @@ export const createArt = (artData: ArtType) =>
     apiCall<ArtWork>('post', '/art-feed', artData, ArtWorkSchema, 'Failed to create art.');
 
 export const updateArt = (id: string, artData: Partial<ArtType>) =>
-    apiCall<ArtWork>('put', `/art-feed/${id}`, { configuration: artData }, ArtWorkSchema, 'Failed to update art.');
+    apiCall<ArtWork>('put', `/art-feed/${id}`, artData, ArtWorkSchema, 'Failed to update art.');
 
-export const updateLike = (id: string, isLiked: boolean, userId: string) =>
-    apiCall<LikeResponse>('post', `/art-feed/${id}/like`, { isLiked, userId }, LikeResponseSchema, 'Failed to update like.');
+export const updateLike = (id: string, isLiked: boolean) =>
+    apiCall<LikeResponse>('post', `/art-feed/${id}/like`, { isLiked }, LikeResponseSchema, 'Failed to update like.');
 
 export const deleteArt = (id: string) =>
     apiCall<void>('delete', `/art-feed/${id}`, undefined, undefined, 'Failed to delete art.');

@@ -64,13 +64,15 @@ const FeedPost: React.FC<FeedPostProps> = ({
         const newIsLiked = !isLiked;
         setIsLiked(newIsLiked);
         setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
-
         try {
-            const response = await updateLike(art.id, newIsLiked, userId);
+            // Update like status and get the new like count
+            const response = await updateLike(art.id || '', newIsLiked);
             setLikesCount(response.likeCount);
             toast.success(newIsLiked ? 'Liked!' : 'Unliked!');
         } catch (error) {
-            // Revert the like status and count
+            // Revert the like status and count if the update fails
+            setIsLiked(!newIsLiked);
+            setLikesCount(prevCount => !newIsLiked ? prevCount + 1 : prevCount - 1);
             setIsLiked(!newIsLiked);
             setLikesCount(prevCount => !newIsLiked ? prevCount + 1 : prevCount - 1);
             toast.error('Failed to update like status. Please try again.');
