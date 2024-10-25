@@ -115,15 +115,49 @@ const Feed: React.FC<FeedProps> = ({
     };
 
     // Handle editing art
-    const handleEdit = async (updatedArt: ArtType) => {
+    const handleEdit = async (updatedArt: Partial<ArtType>) => {
+        console.log('handleEdit called with:', updatedArt);
         try {
-            await updateArt(updatedArt.id, updatedArt);
-            setFeedItems(prevItems => prevItems.map(item =>
-                item.id === updatedArt.id ? updatedArt : item
-            ));
+            const originalArt = feedItems.find(item => item.id === updatedArt.id);
+            console.log('Original art found:', originalArt);
+            if (!originalArt) {
+                console.error('Original art not found for id:', updatedArt.id);
+                throw new Error('Original art not found');
+            }
+
+            const updatedFields: ArtType = {
+                ...originalArt,
+                ...updatedArt,
+                colorA: updatedArt.colorA || originalArt.colorA,
+                colorB: updatedArt.colorB || originalArt.colorB,
+                stripeCount: updatedArt.stripeCount || originalArt.stripeCount,
+                style: updatedArt.style || originalArt.style
+            };
+
+            console.log('Updating art with:', updatedFields);
+            const updatedArtWork = await updateArt(originalArt.id, updatedFields);
+            console.log('Art updated successfully:', updatedArtWork);
+            setFeedItems(prevItems => {
+                const newItems = prevItems.map(item =>
+                    item.id === updatedArtWork.id ? updatedArtWork : item
+                );
+                console.log('Updated feed items:', newItems);
+                return newItems;
+            });
             toast.success('Art updated successfully!');
         } catch (error) {
+            // Log the error and its details
             console.error('Error updating art:', error);
+            if (error instanceof Error) {
+                console.log('Error details:', {
+                    message: error.message,
+                    stack: error.stack,
+                    name: error.name
+                });
+            } else {
+                console.log('Unknown error:', error);
+            }
+            // Display an error message to the user
             toast.error('Failed to update art. Please try again.');
         }
     };

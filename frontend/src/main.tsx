@@ -22,7 +22,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "art-feed",
-        element: <Feed userName={userName} userAvatar={""} />
+        element: <Feed /> // Removed userName and userAvatar props as they don't exist in FeedProps
       },
       {
         path: "profile",
