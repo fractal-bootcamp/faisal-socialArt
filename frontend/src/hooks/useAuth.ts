@@ -1,12 +1,10 @@
-import { useEffect, useState } from 'react';
 import { useClerk, useUser } from '@clerk/clerk-react';
-import { isAuthenticated } from '../services/api';
 
 export const useAuth = () => {
-    console.log('Initializing useAuth hook'); // Debug log
+    console.log('Initializing useAuth hook');
 
     const { user, isSignedIn } = useUser();
-    console.log('User from useUser:', user); // Debug log
+    console.log('User from useUser:', user);
 
     const { session } = useClerk();
 

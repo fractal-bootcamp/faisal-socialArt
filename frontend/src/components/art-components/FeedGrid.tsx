@@ -20,7 +20,8 @@ const FeedGrid: React.FC<FeedGridProps> = ({
         feedItems,
         editingArt,
         setEditingArt,
-        handleGenerateAndPublishArt,
+        handleGenerateNewArt,
+        handlePublishArt,
         handleDelete,
         handleEdit,
         canModifyArt,
@@ -30,7 +31,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
         <div className="feed-grid-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
             <Toaster />
             <div className="w-full max-w-4xl my-6">
-                <Button onClick={handleGenerateAndPublishArt} className="w-full">
+                <Button onClick={handleGenerateNewArt} className="w-full">
                     Generate New Art
                 </Button>
             </div>
@@ -54,7 +55,7 @@ const FeedGrid: React.FC<FeedGridProps> = ({
             {editingArt && (
                 <ArtEditor
                     initialArt={editingArt}
-                    publishArt={handleGenerateAndPublishArt}
+                    publishArt={handlePublishArt}
                     onClose={() => setEditingArt(null)}
                     userAvatar={userAvatar}
                     isEditing={false}

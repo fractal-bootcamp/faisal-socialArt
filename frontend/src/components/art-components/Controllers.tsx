@@ -1,15 +1,15 @@
-import { ArtStyle, ArtWork, updateColor } from "@/services/artService";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card";
+import { ArtStyle, ArtType, updateColor } from "@/services/artService";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Slider } from "../ui/slider";
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
 import { Button } from "../ui/button";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "../ui/select";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../ui/card";
 
 interface ControllersProps {
-    art: ArtWork;
-    setArt: (art: ArtWork) => void;
-    initialArt: ArtWork;
+    art: ArtType;
+    setArt: (art: ArtType) => void;
+    initialArt: ArtType;
     handlePublish: () => void;
     isEditing: boolean;
 }

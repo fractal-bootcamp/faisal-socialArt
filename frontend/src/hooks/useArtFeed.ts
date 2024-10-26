@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
 import { ArtType, generateRandomArt } from '@/services/artService';
-import { createArt, deleteArt, fetchArtFeed, updateArt, useIsArtworkOwner } from '@/services/api';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 import { useClerk } from '@clerk/clerk-react';
+import {
+    createArt,
+    deleteArt,
+    fetchArtFeed,
+    updateArt,
+    useIsArtworkOwner
+} from '@/services/api';
 
-export function useArtFeed() {
+export const useArtFeed = () => {
     console.log('Initializing useArtFeed hook');
 
     const [feedItems, setFeedItems] = useState<ArtType[]>([]);
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
-    const { isAuthenticated, user } = useAuth(); // Use the auth hook
+    const { isAuthenticated, user } = useAuth();
     const client = useClerk();
     const isArtworkOwner = useIsArtworkOwner(client);
 
@@ -32,17 +38,13 @@ export function useArtFeed() {
         fetchArt();
     }, []);
 
-    // Combined function to generate and publish art
-    const handleGenerateAndPublishArt = async () => {
-        console.log('handleGenerateAndPublishArt called');
-        // Check authentication
+    // Function to open editor with new generated art
+    const handleGenerateNewArt = () => {
         if (!isAuthenticated) {
-            console.log('User not authenticated, showing error toast');
             toast.error('Please sign in to start Jammin art');
             return;
         }
 
-        // Generate new art with author details
         const newArt = {
             ...generateRandomArt(),
             userAvatar: user?.imageUrl || '',
@@ -50,16 +52,16 @@ export function useArtFeed() {
             authorId: user?.id || '',
             isAuthor: true,
         };
-        console.log('Generated new art:', newArt);
 
+        setEditingArt(newArt);
+    };
+
+    // Separate function to handle publishing
+    const handlePublishArt = async (artToPublish: ArtType) => {
         try {
-            console.log('Creating art');
-            const createdArt = await createArt(newArt);
-            console.log('Created art:', createdArt);
-            setFeedItems(prevItems => {
-                console.log('Updating feed items with new art');
-                return [createdArt, ...prevItems];
-            });
+            const createdArt = await createArt(artToPublish);
+            setFeedItems(prevItems => [createdArt, ...prevItems]);
+            setEditingArt(null);
             toast.success('Art published successfully!');
         } catch (error) {
             console.error('Error publishing art:', error);
@@ -71,16 +73,14 @@ export function useArtFeed() {
     const handleDelete = async (artId: string) => {
         console.log('handleDelete called with artId:', artId);
         if (!isAuthenticated) {
-            console.log('User not authenticated, showing error toast');
-            toast.error('Please sign in to delete art');
+            console.log('User not authenticated');
             return;
         }
 
         const artToDelete = feedItems.find(item => item.id === artId);
         console.log('Art to delete:', artToDelete);
         if (!artToDelete || !isArtworkOwner(artToDelete)) {
-            console.log('User cannot delete this art, showing error toast');
-            toast.error('You can only delete your own art');
+            console.log('User cannot delete this art');
             return;
         }
 
@@ -102,16 +102,14 @@ export function useArtFeed() {
     const handleEdit = async (updatedArt: Partial<ArtType>) => {
         console.log('handleEdit called with:', updatedArt);
         if (!isAuthenticated) {
-            console.log('User not authenticated, showing error toast');
-            toast.error('Please sign in to edit art');
+            console.log('User not authenticated');
             return;
         }
 
         const originalArt = feedItems.find(item => item.id === updatedArt.id);
         console.log('Original art:', originalArt);
         if (!originalArt || !isArtworkOwner(originalArt)) {
-            console.log('User cannot edit this art, showing error toast');
-            toast.error('You can only edit your own art');
+            console.log('User cannot edit this art');
             return;
         }
 
@@ -142,9 +140,10 @@ export function useArtFeed() {
 
     // Add a function to check if user can edit/delete an artwork
     const canModifyArt = (art: ArtType): boolean => {
+        // Check if the user is authenticated and owns the artwork
         const result = isAuthenticated && isArtworkOwner(art);
         console.log('canModifyArt called for:', art, 'Result:', result);
-        return result;
+        return result || false;
     };
 
     console.log('Returning useArtFeed hook values');
@@ -152,7 +151,8 @@ export function useArtFeed() {
         feedItems,
         editingArt,
         setEditingArt,
-        handleGenerateAndPublishArt,
+        handleGenerateNewArt,
+        handlePublishArt,
         handleDelete,
         handleEdit,
         canModifyArt,

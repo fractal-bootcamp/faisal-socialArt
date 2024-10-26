@@ -7,6 +7,7 @@ import {
     ChevronsUpDown
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from '../ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -22,8 +23,14 @@ import {
     SidebarMenuItem,
     SidebarMenuButton,
 } from "@/components/ui/sidebar";
-import { Button } from '../ui/button';
-import { SignedIn, SignedOut, SignInButton, UserButton, useUser, SignOutButton } from '@clerk/clerk-react';
+import {
+    SignedIn,
+    SignedOut,
+    SignInButton,
+    UserButton,
+    useUser,
+    SignOutButton
+} from '@clerk/clerk-react';
 
 interface PageSidebarProps {
     companyName: string;

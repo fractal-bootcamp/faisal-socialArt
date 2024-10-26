@@ -2,7 +2,6 @@ import axios from 'axios';
 import { ArtType } from './artService';
 import { z } from 'zod';
 import { ArtWorkSchema } from '../../../common/schemas';
-import { Clerk } from '@clerk/clerk-js';
 import { useClerk } from '@clerk/clerk-react';
 
 const port = 3000;
@@ -187,7 +186,7 @@ export const useIsArtworkOwner = (client: ReturnType<typeof useClerk>): ((artwor
         try {
 
             const userId = client.session?.user.id;
-            console.log('FSJ:DKLFSDFJ:S:DLKFJSD:L', userId);
+            console.log('user ID:', userId);
 
             console.log('User ID:', artwork.authorId, userId);
             const result = artwork.authorId === userId;
