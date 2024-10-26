@@ -23,18 +23,17 @@ import {
     SidebarMenuButton,
 } from "@/components/ui/sidebar";
 import { Button } from '../ui/button';
+import { SignedIn, SignedOut, SignInButton, UserButton, useUser, SignOutButton } from '@clerk/clerk-react';
 
 interface PageSidebarProps {
-    userName: string;
-    userAvatar: string;
     companyName: string;
 }
 
 const PageSidebar: React.FC<PageSidebarProps> = ({
-    userName,
-    userAvatar,
     companyName,
 }) => {
+    const { user } = useUser();
+
     return (
         // TODO: Add collapsible="icon" when we have a conditional design for the icon
         <Sidebar variant="sidebar">
@@ -82,30 +81,32 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
             </SidebarContent>
 
             <SidebarFooter className="border-b">
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="flex items-center justify-between w-full min-h-12">
-                            <div className="flex items-center space-x-2">
-                                <Avatar>
-                                    <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
-                                    <AvatarFallback>{userName[0]}</AvatarFallback>
-                                </Avatar>
+                <SignedIn>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="flex items-center justify-between w-full min-h-12">
+                                <div className="flex items-center space-x-2">
+                                    <UserButton />
+                                    <span>{user?.fullName || 'Account'}</span>
+                                </div>
+                                <ChevronsUpDown className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
 
-                                <span>{userName}</span>
-                            </div>
-                            <ChevronsUpDown className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-
-                    <DropdownMenuContent align="end" className="w-56">
-                        <DropdownMenuItem>
-                            <LogOut className="h-4 w-4 mr-2" />
-
-                            <span>Logout</span>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-                {/* Added copyright notice with smaller font */}
+                        <DropdownMenuContent align="end" className="w-56">
+                            <DropdownMenuItem>
+                                <LogOut className="h-4 w-4 mr-2" />
+                                {/* Wrap the SignOutButton with SignedOut component */}
+                                <SignedOut>
+                                    <Button variant="ghost" className="flex items-center justify-center w-full min-h-12">
+                                        {/* Use SignOutButton without the 'mode' prop */}
+                                        <SignOutButton signOutOptions={{ redirectUrl: '/' }} />
+                                    </Button>
+                                </SignedOut>
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                </SignedIn>
             </SidebarFooter>
             <div className="container py-1 align-center justify-center text-center text-xs mt-1">
                 © 2024 {companyName}

@@ -7,7 +7,7 @@ import FeedGrid from '../art-components/FeedGrid';
 interface ProfilePageContentProps {
     userArts?: ArtFeed;
     userName: string;
-    userAvatar: string;
+    userAvatar?: string;
 }
 
 const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
@@ -21,18 +21,17 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
                 <div className="w-full max-w-4xl">
                     <div className="flex items-center">
                         <Avatar className="w-24 h-24 mr-4">
-                            <AvatarImage src={userAvatar} alt={`${userName} Logo`} />
-                            <AvatarFallback>{userName?.charAt(0) ?? ''}</AvatarFallback>
+                            <AvatarImage src={userAvatar} alt={`${userName} Avatar`} />
+                            <AvatarFallback>{userName.charAt(0)}</AvatarFallback>
                         </Avatar>
-
-                        <h1 className="text-3xl font-bold">{userName ?? 'User'}'s Gallery</h1>
+                        <h1 className="text-3xl font-bold">{userName}'s Gallery</h1>
                     </div>
 
                     {/* Display the feed as a grid for the user's profile page */}
                     <FeedGrid
                         initialItems={userArts}
-                        userName={userName ?? ''}
-                        userAvatar={userAvatar ?? ''}
+                        userName={userName}
+                        userAvatar={userAvatar || ''}
                         handleDeleteArt={() => { }}
                         onEditArt={() => { }}
                     />

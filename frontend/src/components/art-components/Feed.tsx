@@ -12,7 +12,14 @@ interface FeedProps {
 const Feed: React.FC<FeedProps> = ({
     displayAsGrid = false,
 }) => {
-    const { feedItems, editingArt, setEditingArt, handlePublishArt, handleAddNewItem, handleDelete, handleEdit } = useArtFeed();
+    const { feedItems,
+        editingArt,
+        setEditingArt,
+        handlePublishArt,
+        handleAddNewItem,
+        handleDelete,
+        handleEdit
+    } = useArtFeed();
 
     return (
         <div className="flex-grow overflow-y-auto p-6">
