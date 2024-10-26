@@ -66,25 +66,28 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                         </Link>
                     </SidebarMenuItem>
                     {/* Profile link */}
-                    <SidebarMenuItem className="min-h-10 hover:bg-gray-100 rounded-lg">
-                        <Link to="/profile" className="w-full">
-                            <SidebarMenuButton className="flex items-center w-full h-full">
-                                <div className="flex items-center">
-                                    <User className="h-5 w-5 mr-2" />
-
-                                    <span>Profile</span>
-                                </div>
-                            </SidebarMenuButton>
-                        </Link>
-                    </SidebarMenuItem>
+                    <SignedIn>
+                        {/* Profile link - only visible for logged in users */}
+                        <SidebarMenuItem className="min-h-10 hover:bg-gray-100 rounded-lg">
+                            <Link to="/profile" className="w-full">
+                                <SidebarMenuButton className="flex items-center w-full h-full">
+                                    <div className="flex items-center">
+                                        <User className="h-5 w-5 mr-2" />
+                                        <span>Profile</span>
+                                    </div>
+                                </SidebarMenuButton>
+                            </Link>
+                        </SidebarMenuItem>
+                    </SignedIn>
                 </SidebarMenu>
             </SidebarContent>
 
             <SidebarFooter className="border-b">
+                {/* Show dropdown menu with sign out option when user is signed in */}
                 <SignedIn>
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="flex items-center justify-between w-full min-h-12">
+                            <Button variant="ghost" className="flex items-center justify-between w-full min-h-12 bg-white">
                                 <div className="flex items-center space-x-2">
                                     <UserButton />
                                     <span>{user?.fullName || 'Account'}</span>
@@ -94,19 +97,28 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                         </DropdownMenuTrigger>
 
                         <DropdownMenuContent align="end" className="w-56">
-                            <DropdownMenuItem>
-                                <LogOut className="h-4 w-4 mr-2" />
-                                {/* Wrap the SignOutButton with SignedOut component */}
-                                <SignedOut>
-                                    <Button variant="ghost" className="flex items-center justify-center w-full min-h-12">
-                                        {/* Use SignOutButton without the 'mode' prop */}
-                                        <SignOutButton signOutOptions={{ redirectUrl: '/' }} />
-                                    </Button>
-                                </SignedOut>
+                            <DropdownMenuItem asChild>
+                                {/* Wrap the entire DropdownMenuItem with SignOutButton */}
+                                <SignOutButton signOutOptions={{ redirectUrl: '/' }}>
+                                    <div className="flex items-center justify-center w-full">
+                                        <LogOut className="h-4 w-4 mr-2" />
+                                        <span>Sign out</span>
+                                    </div>
+                                </SignOutButton>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </SignedIn>
+
+                {/* Show sign in button when user is not signed in */}
+                <SignedOut>
+                    <Button variant="ghost" className="flex items-center justify-between w-full min-h-12">
+                        <div className="flex items-center space-x-2">
+                            <User className="h-5 w-5" />
+                            <SignInButton mode="modal">Sign in</SignInButton>
+                        </div>
+                    </Button>
+                </SignedOut>
             </SidebarFooter>
             <div className="container py-1 align-center justify-center text-center text-xs mt-1">
                 © 2024 {companyName}

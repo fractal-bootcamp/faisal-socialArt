@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { createBrowserRouter, RouterProvider, Navigate } from 'react-router-dom'
 import './index.css'
 import ProfilePage from './components/web-pages/ProfilePage'
 import RootLayout from './RootLayout'
 import Feed from './components/art-components/Feed'
-import { ClerkProvider } from '@clerk/clerk-react'
+import { ClerkProvider, SignedIn } from '@clerk/clerk-react'
 
 const companyName = "Jammin'"
 
@@ -17,19 +17,26 @@ if (!PUBLISHABLE_KEY) {
 
 // Define the router configuration
 const router = createBrowserRouter([
-
   {
     path: "/",
-    element:
-      <RootLayout companyName={companyName} />,
+    element: <RootLayout companyName={companyName} />,
     children: [
+      {
+        // Redirect the root path to /art-feed
+        index: true,
+        element: <Navigate to="/art-feed" replace />
+      },
       {
         path: "art-feed",
         element: <Feed />
       },
       {
         path: "profile",
-        element: <ProfilePage />
+        element: (
+          <SignedIn>
+            <ProfilePage />
+          </SignedIn>
+        )
       }
     ]
   }
