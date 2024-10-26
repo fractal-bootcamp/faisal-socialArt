@@ -90,8 +90,6 @@ app.post('/api/art-feed', clerkMiddleware(), authMiddleware, async (req: Request
                     clerkId: user.clerkId // Connect the artwork to the user using clerkId
                 }
             },
-            userName: user.username, // Set the userName
-            userAvatar: user.avatar // Set the userAvatar if available
         },
         include: {
             author: true
@@ -175,11 +173,7 @@ app.put('/api/art-feed/:id', clerkMiddleware(), authMiddleware, async (req: Requ
     const updatedArtWork = await prisma.artWork.update({
         where: { id },
         data: {
-            configuration: artData.configuration, // Assuming configuration is part of artData
-            userAvatar: user.avatar,
-            userName: user.username,
-            isAuthor: true, // Since we've verified the user is the author
-            // No need to update authorId as it should remain the same
+            configuration: artData.configuration,
         },
         include: { author: true } // Include author information in the response
     });
