@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { ArtType, generateRandomArt } from '@/services/artService';
-import { createArt, deleteArt, fetchArtFeed, updateArt, isArtworkOwner } from '@/services/api';
+import { createArt, deleteArt, fetchArtFeed, updateArt, useIsArtworkOwner } from '@/services/api';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
+import { useClerk } from '@clerk/clerk-react';
 
 export function useArtFeed() {
     console.log('Initializing useArtFeed hook');
@@ -10,6 +11,8 @@ export function useArtFeed() {
     const [feedItems, setFeedItems] = useState<ArtType[]>([]);
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
     const { isAuthenticated, user } = useAuth(); // Use the auth hook
+    const client = useClerk();
+    const isArtworkOwner = useIsArtworkOwner(client);
 
     console.log('Initial state:', { feedItems, editingArt, isAuthenticated, user });
 

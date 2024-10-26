@@ -1,6 +1,8 @@
+"use client";
 import { Outlet } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from './components/ui/sidebar';
 import PageSidebar from './components/web-pages/PageSideBar';
+import { useAuth } from '@clerk/clerk-react';
 
 interface RootLayoutProps {
   companyName: string;
@@ -9,6 +11,14 @@ interface RootLayoutProps {
 const RootLayout: React.FC<RootLayoutProps> = ({
   companyName
 }) => {
+  const { isSignedIn, isLoaded } = useAuth();
+
+  console.log('DFSDFDSFSDFSDF:', isSignedIn);
+
+  if (!isSignedIn || !isLoaded) {
+    return null;
+  }
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex">

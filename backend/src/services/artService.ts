@@ -1,7 +1,6 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { ArtWork } from "../../../common/types";
 
-
 const prisma = new PrismaClient();
 
 type ArtStyle = "line" | "circle";
@@ -54,9 +53,9 @@ export function getPrismaArtFromDTO(dto: ArtWork): Prisma.ArtWorkCreateInput {
                 id: dto.authorId
             }
         },
-        userAvatar: dto.userAvatar,
-        userName: dto.userName,
-        isAuthor: dto.isAuthor
+        // userAvatar: dto.userAvatar,
+        // userName: dto.userName,
+        // isAuthor: dto.isAuthor
     };
 }
 

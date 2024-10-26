@@ -6,10 +6,12 @@ import ProfilePage from './components/web-pages/ProfilePage'
 import RootLayout from './RootLayout'
 import Feed from './components/art-components/Feed'
 import { ClerkProvider, SignedIn } from '@clerk/clerk-react'
+import { Clerk } from '@clerk/clerk-js'
 
 const companyName = "Jammin'"
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+export const clerk = new Clerk(PUBLISHABLE_KEY);
 
 if (!PUBLISHABLE_KEY) {
   throw new Error("Missing Publishable Key.");
