@@ -96,17 +96,25 @@ const PageSidebar: React.FC<PageSidebarProps> = ({
                         <DropdownMenuContent align="end" className="w-56">
                             <DropdownMenuItem>
                                 <LogOut className="h-4 w-4 mr-2" />
-                                {/* Wrap the SignOutButton with SignedOut component */}
-                                <SignedOut>
-                                    <Button variant="ghost" className="flex items-center justify-center w-full min-h-12">
-                                        {/* Use SignOutButton without the 'mode' prop */}
-                                        <SignOutButton signOutOptions={{ redirectUrl: '/' }} />
-                                    </Button>
-                                </SignedOut>
+                                {/* Remove SignedOut wrapper and simplify SignOutButton */}
+                                <SignOutButton signOutOptions={{ redirectUrl: '/' }}>
+                                    Sign Out
+                                </SignOutButton>
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
                 </SignedIn>
+
+                {/* Add SignedOut section for Sign In button */}
+                <SignedOut>
+                    <div className="p-4">
+                        <SignInButton mode="modal">
+                            <Button variant="ghost" className="w-full">
+                                Sign In
+                            </Button>
+                        </SignInButton>
+                    </div>
+                </SignedOut>
             </SidebarFooter>
             <div className="container py-1 align-center justify-center text-center text-xs mt-1">
                 © 2024 {companyName}

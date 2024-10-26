@@ -4,6 +4,7 @@ import { PrismaClient } from '@prisma/client';
 import { clerkMiddleware, requireAuth, clerkClient, getAuth } from '@clerk/express';
 import { getArtFeed, getPrismaArtFromDTO } from './services/artService';
 import { ArtWorkSchema } from '../../common/schemas';
+import { authMiddleware } from './middleware';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,7 +13,14 @@ const prisma = new PrismaClient();
 // Middleware
 app.use(cors());
 app.use(express.json());
+// First log incoming requests
+app.use((req, res, next) => {
+    console.log(`Incoming ${req.method} request to ${req.url}`);
+    next();
+});
+// Then use clerk and auth middleware
 app.use(clerkMiddleware());
+app.use(authMiddleware);
 
 const user = (req: Request) => (req as any).user;
 

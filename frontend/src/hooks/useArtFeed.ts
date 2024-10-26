@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { ArtType, generateRandomArt } from '@/services/artService';
 import { createArt, deleteArt, fetchArtFeed, updateArt } from '@/services/api';
 import { toast } from 'sonner';
+import { useUser } from '@clerk/clerk-react';
 
 export function useArtFeed() {
     const [feedItems, setFeedItems] = useState<ArtType[]>([]);
     const [editingArt, setEditingArt] = useState<ArtType | null>(null);
+    const { user } = useUser();
+
 
     useEffect(() => {
         const fetchArt = async () => {
@@ -21,9 +24,9 @@ export function useArtFeed() {
 
         const artWithAuthor = {
             ...newArt,
-            userAvatar: newArt.userAvatar || '',
-            userName: newArt.userName || '',
-            authorId: newArt.authorId || '',
+            userAvatar: user?.imageUrl || '',
+            userName: user?.fullName || user?.username || '',
+            authorId: user?.id || '',
             isAuthor: true,
         };
 

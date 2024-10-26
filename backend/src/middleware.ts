@@ -5,7 +5,10 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient()
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction) => {
+    console.log('=== authMiddleware called ===');
+    console.log('Request path:', req.path);
     const { userId } = getAuth(req)
+    console.log('userId:', userId);
     if (!userId) {
         res.status(500).json({ error: "User not logged in" })
         return;
@@ -13,7 +16,7 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
 
     const clerkUser = await clerkClient.users.getUser(userId)
     // Find user by clerkUserId
-    let user = await prisma.user.findFirst({
+    let user = await prisma.user.findUnique({
         where: { clerkUserId: userId }
     })
 

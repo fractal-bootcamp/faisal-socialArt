@@ -2,6 +2,7 @@ import axios from 'axios';
 import { ArtType } from './artService';
 import { z } from 'zod';
 import { ArtWorkSchema } from '../../../common/schemas';
+import { useAuth } from '@clerk/clerk-react';
 
 const port = 3000;
 const API_BASE_URL = `http://localhost:${port}/api`;
@@ -10,6 +11,8 @@ const API_BASE_URL = `http://localhost:${port}/api`;
 const api = axios.create({
     baseURL: API_BASE_URL,
 });
+
+// const { getToken } = useAuth();
 
 
 // Define the ArtWork schema
@@ -40,9 +43,40 @@ const apiCall = async <T>(
     errorMessage?: string
 ): Promise<T> => {
     try {
-        const response = await api[method](url, data);
+        // Get the token using the Clerk useAuth hook
+        const token = await getToken();
+
+        // Log the request details
+        console.log(`🚀 API Request: ${method.toUpperCase()} ${url}`, {
+            hasToken: !!token,
+            data: data || 'No data'
+        });
+
+        // Add authorization header to the request
+        const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+
+        let response;
+        // For GET and DELETE requests, pass headers in config object
+        if (method === 'get' || method === 'delete') {
+            response = await api[method](url, { headers });
+        } else {
+            // For POST and PUT requests, pass data and headers separately
+            response = await api[method](url, data, { headers });
+        }
+
+        // Log successful response
+        console.log(`✅ API Response: ${method.toUpperCase()} ${url}`, {
+            status: response.status,
+            data: response.data
+        });
+
         return schema ? schema.parse(response.data) : response.data as T;
     } catch (error) {
+        // Log error details
+        console.error(`❌ API Error: ${method.toUpperCase()} ${url}`, {
+            error,
+            data: data || 'No data'
+        });
         throw handleError(error, errorMessage);
     }
 };
