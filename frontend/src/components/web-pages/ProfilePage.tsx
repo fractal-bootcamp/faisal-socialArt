@@ -1,23 +1,14 @@
 import React from 'react';
 import ProfilePageContent from './ProfilePageContent';
-import { ArtType } from '@/services/artService';
+import { useUser } from '@clerk/clerk-react';
 
-interface ProfilePageProps {
-    userArts: ArtType[];
-    userName: string;
-    userAvatar: string;
-}
+const ProfilePage: React.FC = () => {
+    const { user } = useUser();
 
-const ProfilePage: React.FC<ProfilePageProps> = ({
-    userArts,
-    userName,
-    userAvatar
-}) => {
     return (
         <ProfilePageContent
-            userArts={userArts}
-            userName={userName}
-            userAvatar={userAvatar}
+            userName={user?.fullName || user?.username || 'User'}
+            userAvatar={user?.imageUrl}
         />
     );
 };

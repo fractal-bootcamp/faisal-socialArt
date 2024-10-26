@@ -5,12 +5,15 @@ import './index.css'
 import ProfilePage from './components/web-pages/ProfilePage'
 import RootLayout from './RootLayout'
 import Feed from './components/art-components/Feed'
+import { ClerkProvider } from '@clerk/clerk-react'
 
-const userName = "Faisal Owimer"
-const userAvatar = "https://github.com/faisalowimer.png"
-const authorId = "123"
 const companyName = "Jammin'"
-const isAuthor = true
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error("Missing Publishable Key.");
+}
 
 // Define the router configuration
 const router = createBrowserRouter([
@@ -18,15 +21,15 @@ const router = createBrowserRouter([
   {
     path: "/",
     element:
-      <RootLayout userName={userName} userAvatar={userAvatar} authorId={authorId} companyName={companyName} isAuthor={isAuthor} />,
+      <RootLayout companyName={companyName} />,
     children: [
       {
         path: "art-feed",
-        element: <Feed /> // Removed userName and userAvatar props as they don't exist in FeedProps
+        element: <Feed />
       },
       {
         path: "profile",
-        element: <ProfilePage userArts={[]} userName={userName} userAvatar={userAvatar} />
+        element: <ProfilePage />
       }
     ]
   }
@@ -35,6 +38,8 @@ const router = createBrowserRouter([
 // Render the app with the router
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      <RouterProvider router={router} />
+    </ClerkProvider>
   </React.StrictMode>
 )

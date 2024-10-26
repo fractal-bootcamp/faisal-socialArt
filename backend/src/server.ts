@@ -14,6 +14,8 @@ app.use(cors());
 app.use(express.json());
 app.use(clerkMiddleware());
 
+const user = (req: Request) => (req as any).user;
+
 // Custom middleware for checking user existence in database
 const verifyUserInDatabase = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const { userId } = getAuth(req);
@@ -33,16 +35,19 @@ const verifyUserInDatabase = async (req: Request, res: Response, next: NextFunct
     return next();
 };
 
-const user = (req: Request) => (req as any).user;
-
 // Routes
 app.get('/', (_req, res) => {
     res.send("Hello, let's jam some art with Jammin'!");
 });
 
+app.get('/api/users', async (_req: Request, res: Response) => {
+    const users = await clerkClient.users.getUserList();
+    res.json(users);
+});
+
 app.get("/protected", requireAuth(), verifyUserInDatabase, (req: Request, res: Response) => {
     // User is now available on req as any due to custom middleware
-    res.json({ user: (req as any).user });
+    res.json({ user });
 });
 
 app.get('/api/art-feed', async (_req: Request, res: Response) => {
