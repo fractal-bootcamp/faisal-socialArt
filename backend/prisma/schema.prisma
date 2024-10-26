@@ -15,6 +15,7 @@ datasource db {
 
 model User {
   id        String   @id @default(uuid())
+  clerkId   String   @unique
   email     String   @unique
   username  String   @unique
   firstName String
@@ -36,7 +37,7 @@ model ArtWork {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  author   User   @relation(fields: [authorId], references: [id])
+  author   User   @relation(fields: [authorId], references: [clerkId])
   authorId String
   likes    Like[]
 }
@@ -46,7 +47,7 @@ model Like {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  user      User    @relation(fields: [userId], references: [id])
+  user      User    @relation(fields: [userId], references: [clerkId])
   userId    String
   artWorks  ArtWork @relation(fields: [artWorkId], references: [id], onDelete: Cascade)
   artWorkId String
