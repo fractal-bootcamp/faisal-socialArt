@@ -12,13 +12,14 @@ interface FeedProps {
 const Feed: React.FC<FeedProps> = ({
     displayAsGrid = false,
 }) => {
-    const { feedItems,
+    const {
+        feedItems,
         editingArt,
         setEditingArt,
-        handlePublishArt,
-        handleAddNewItem,
+        handleGenerateAndPublishArt,
         handleDelete,
-        handleEdit
+        handleEdit,
+        canModifyArt,
     } = useArtFeed();
 
     return (
@@ -29,7 +30,7 @@ const Feed: React.FC<FeedProps> = ({
             <div className="feed-container min-h-screen w-full flex flex-col items-center overflow-y-auto px-4 pb-6">
                 <Toaster />
                 <div className="w-full max-w-md mb-6">
-                    <Button onClick={handleAddNewItem} className="w-full">
+                    <Button onClick={handleGenerateAndPublishArt} className="w-full">
                         Generate New Art
                     </Button>
                 </div>
@@ -42,7 +43,7 @@ const Feed: React.FC<FeedProps> = ({
                                 userAvatar={item.userAvatar || ''}
                                 userName={item.userName || ''}
                                 authorId={item.authorId || ''}
-                                isAuthor={item.isAuthor || false}
+                                isAuthor={canModifyArt(item)}
                                 onLike={() => { }} // Placeholder for like functionality
                                 onEdit={handleEdit}
                                 onDelete={() => handleDelete(item.id || '')}
@@ -55,7 +56,7 @@ const Feed: React.FC<FeedProps> = ({
                 {editingArt && (
                     <ArtEditor
                         initialArt={editingArt}
-                        publishArt={handlePublishArt}
+                        publishArt={handleGenerateAndPublishArt}
                         onClose={() => setEditingArt(null)}
                         userAvatar={editingArt.userAvatar || ''}
                         userName={editingArt.userName || ''}

@@ -2,15 +2,49 @@ import axios from 'axios';
 import { ArtType } from './artService';
 import { z } from 'zod';
 import { ArtWorkSchema } from '../../../common/schemas';
+import { Clerk } from '@clerk/clerk-js';
 
 const port = 3000;
 const API_BASE_URL = `http://localhost:${port}/api`;
 
-// Create axios instance with baseURL
+// Create axios instance with baseURL and interceptors
 const api = axios.create({
     baseURL: API_BASE_URL,
 });
 
+console.log('Created axios instance');
+
+// Add request interceptor to add auth token
+api.interceptors.request.use(async (config) => {
+    console.log('Intercepting request');
+    try {
+        // Get the token from Clerk
+        const token = await getAuthToken();
+        console.log('Got auth token:', token ? 'Token received' : 'No token', token);
+        if (token) {
+            config.headers.Authorization = `Bearer ${token}`;
+            console.log('Added Authorization header', token);
+        }
+        return config;
+    } catch (error) {
+        console.error('Error setting auth token:', error);
+        return config;
+    }
+});
+
+// Function to get auth token from Clerk
+export const getAuthToken = async (): Promise<string | null> => {
+    console.log('Getting auth token');
+    try {
+        // Use the imported Clerk type instead of accessing it from the window object
+        const token = await Clerk.session?.getToken();
+        console.log('Auth token:', token ? 'Token received' : 'No token', token);
+        return token || null;
+    } catch (error) {
+        console.error('Error getting auth token:', error);
+        return null;
+    }
+}
 
 // Define the ArtWork schema
 
@@ -28,10 +62,12 @@ export type LikeResponse = z.infer<typeof LikeResponseSchema>;
 
 // Helper function to handle errors
 const handleError = (error: unknown, errorMessage?: string): never => {
-    console.error(error);
+    console.error('Error occurred:', error);
+    console.error('Error message:', errorMessage || 'An error occurred');
     throw new Error(errorMessage || 'An error occurred');
 };
 
+// Updated apiCall function with error handling
 const apiCall = async <T>(
     method: Method,
     url: Route,
@@ -39,28 +75,107 @@ const apiCall = async <T>(
     schema?: z.ZodType<T>,
     errorMessage?: string
 ): Promise<T> => {
+    console.log(`Making API call: ${method.toUpperCase()} ${url}`);
     try {
         const response = await api[method](url, data);
+        console.log('API response:', response.data);
         return schema ? schema.parse(response.data) : response.data as T;
-    } catch (error) {
+    } catch (error: any) {
+        // Enhanced error handling
+        if (error.response?.status === 401) {
+            console.error('Unauthorized error');
+            throw new Error('Unauthorized: Please sign in');
+        }
+        if (error.response?.status === 403) {
+            console.error('Forbidden error');
+            throw new Error('Forbidden: You don\'t have permission to perform this action');
+        }
         throw handleError(error, errorMessage);
     }
 };
 
-export const fetchArtFeed = () =>
-    apiCall<ArtWork[]>('get', '/art-feed', undefined, z.array(ArtWorkSchema), 'Failed to fetch art feed.');
+// Protected route functions
+export const createArt = async (artData: ArtType) => {
+    console.log('Creating art:', artData);
+    const token = await getAuthToken();
+    if (!token) {
+        console.error('No authentication token');
+        throw new Error('Authentication required');
+    }
+    return apiCall<ArtWork>('post', '/art-feed', artData, ArtWorkSchema, 'Failed to create art.');
+};
 
-export const createArt = (artData: ArtType) =>
-    apiCall<ArtWork>('post', '/art-feed', artData, ArtWorkSchema, 'Failed to create art.');
+export const updateArt = async (id: string, artData: Partial<ArtType>) => {
+    console.log(`Updating art with id ${id}:`, artData);
+    const token = await getAuthToken();
+    if (!token) {
+        console.error('No authentication token');
+        throw new Error('Authentication required');
+    }
+    return apiCall<ArtWork>('put', `/art-feed/${id}`, artData, ArtWorkSchema, 'Failed to update art.');
+};
 
-export const updateArt = (id: string, artData: Partial<ArtType>) =>
-    apiCall<ArtWork>('put', `/art-feed/${id}`, artData, ArtWorkSchema, 'Failed to update art.');
+export const updateLike = async (id: string, isLiked: boolean) => {
+    console.log(`Updating like for art with id ${id}. isLiked: ${isLiked}`);
+    const token = await getAuthToken();
+    if (!token) {
+        console.error('No authentication token');
+        throw new Error('Authentication required');
+    }
+    return apiCall<LikeResponse>(
+        'post',
+        `/art-feed/${id}/like`,
+        { isLiked },
+        LikeResponseSchema,
+        'Failed to update like.'
+    );
+};
 
-export const updateLike = (id: string, isLiked: boolean) =>
-    apiCall<LikeResponse>('post', `/art-feed/${id}/like`, { isLiked }, LikeResponseSchema, 'Failed to update like.');
+export const deleteArt = async (id: string) => {
+    console.log(`Deleting art with id ${id}`);
+    const token = await getAuthToken();
+    if (!token) {
+        console.error('No authentication token');
+        throw new Error('Authentication required');
+    }
+    return apiCall<void>('delete', `/art-feed/${id}`, undefined, undefined, 'Failed to delete art.');
+};
 
-export const deleteArt = (id: string) =>
-    apiCall<void>('delete', `/art-feed/${id}`, undefined, undefined, 'Failed to delete art.');
+// Public route functions
+export const fetchArtFeed = () => {
+    console.log('Fetching art feed');
+    return apiCall<ArtWork[]>('get', '/art-feed', undefined, z.array(ArtWorkSchema), 'Failed to fetch art feed.');
+}
 
-export const fetchUserArtwork = (userName: string) =>
-    apiCall<ArtWork[]>('get', `/profile/${userName}`, undefined, z.array(ArtWorkSchema), 'Failed to fetch user artwork.');
+export const fetchUserArtwork = (userName: string) => {
+    console.log(`Fetching artwork for user: ${userName}`);
+    return apiCall<ArtWork[]>('get', `/profile/${userName}`, undefined, z.array(ArtWorkSchema), 'Failed to fetch user artwork.');
+}
+
+// Add a function to check if user is authenticated
+export const isAuthenticated = async (): Promise<boolean> => {
+    console.log('Checking if user is authenticated');
+    try {
+        const token = await getAuthToken();
+        const result = !!token;
+        console.log(`User is ${result ? 'authenticated' : 'not authenticated'}`);
+        return result;
+    } catch {
+        console.log('Error checking authentication, returning false');
+        return false;
+    }
+};
+
+// Add a function to check if user owns the artwork
+export const isArtworkOwner = (artwork: ArtWork): boolean => {
+    console.log('Checking if user owns artwork:', artwork);
+    try {
+        const userId = Clerk.user?.id;
+        const result = artwork.authorId === userId;
+        console.log(`User ${result ? 'owns' : 'does not own'} the artwork`);
+        return result;
+    } catch {
+        console.log('Error checking artwork ownership, returning false');
+        return false;
+    }
+};
