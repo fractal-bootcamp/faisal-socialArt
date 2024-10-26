@@ -3,6 +3,7 @@ import { ArtType } from './artService';
 import { z } from 'zod';
 import { ArtWorkSchema } from '../../../common/schemas';
 import { Clerk } from '@clerk/clerk-js';
+import { useClerk } from '@clerk/clerk-react';
 
 const port = 3000;
 const API_BASE_URL = `http://localhost:${port}/api`;
@@ -32,17 +33,30 @@ api.interceptors.request.use(async (config) => {
     }
 });
 
-// Function to get auth token from Clerk
-export const getAuthToken = async (): Promise<string | null> => {
-    console.log('Getting auth token');
+
+// utils/getClerkToken.js
+export async function getAuthToken() {
     try {
-        // Use the imported Clerk type instead of accessing it from the window object
-        const token = await Clerk.session?.getToken();
-        console.log('Auth token:', token ? 'Token received' : 'No token', token);
-        return token || null;
+        // Get the window.__clerk__ instance
+        const clerk = window?.Clerk;
+
+        if (!clerk) {
+            throw new Error('Clerk is not initialized');
+        }
+
+        // Get the session
+        const session = await clerk.session;
+
+        if (!session) {
+            throw new Error('No active session');
+        }
+
+        // Get the token
+        const token = await session.getToken();
+        return token;
     } catch (error) {
-        console.error('Error getting auth token:', error);
-        return null;
+        console.error('Error getting Clerk token:', error);
+        throw error;
     }
 }
 
@@ -167,15 +181,21 @@ export const isAuthenticated = async (): Promise<boolean> => {
 };
 
 // Add a function to check if user owns the artwork
-export const isArtworkOwner = (artwork: ArtWork): boolean => {
-    console.log('Checking if user owns artwork:', artwork);
-    try {
-        const userId = Clerk.user?.id;
-        const result = artwork.authorId === userId;
-        console.log(`User ${result ? 'owns' : 'does not own'} the artwork`);
-        return result;
-    } catch {
-        console.log('Error checking artwork ownership, returning false');
-        return false;
+export const useIsArtworkOwner = (client: ReturnType<typeof useClerk>): ((artwork: ArtWork) => boolean) => {
+    return (artwork: ArtWork) => {
+        console.log('Checking if user owns artwork:', artwork);
+        try {
+
+            const userId = client.session?.user.id;
+            console.log('FSJ:DKLFSDFJ:S:DLKFJSD:L', userId);
+
+            console.log('User ID:', artwork.authorId, userId);
+            const result = artwork.authorId === userId;
+            console.log(`User ${result ? 'owns' : 'does not own'} the artwork`);
+            return result;
+        } catch {
+            console.log('Error checking artwork ownership, returning false');
+            return false;
+        }
     }
 };
