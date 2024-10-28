@@ -18,7 +18,8 @@ export const ArtWorkSchema = z.object({
         b: z.number()
     }),
     stripeCount: z.number(),
-    style: z.enum(['line', 'circle'])
+    style: z.enum(['line', 'circle']),
+    likeCount: z.number().optional()
 });
 
 // Define the PrismaArtWork schema
@@ -46,20 +47,22 @@ export const DBArtWorkSchema = z.object({
     authorId: z.string(),
     userAvatar: z.string(),
     userName: z.string(),
-    isAuthor: z.boolean()
+    isAuthor: z.boolean(),
+    likeCount: z.number().optional()
 });
 
 // Define the ArtWorkDTOSchema with transform
-export const ArtWorkDTOSchema = DBArtWorkSchema.transform((art) => ({
-    id: art.id,
-    userAvatar: art.author.avatar ?? "",
-    userName: art.author.username,
+export const ArtWorkDTOSchema = DBArtWorkSchema.transform((dbArt) => ({
+    id: dbArt.id,
+    userAvatar: dbArt.author.avatar || '',
+    userName: dbArt.author.username,
     isAuthor: true,
-    authorId: art.authorId,
-    colorA: art.configuration.colorA,
-    colorB: art.configuration.colorB,
-    stripeCount: art.configuration.stripeCount,
-    style: art.configuration.style
+    authorId: dbArt.authorId,
+    colorA: dbArt.configuration.colorA,
+    colorB: dbArt.configuration.colorB,
+    stripeCount: dbArt.configuration.stripeCount,
+    style: dbArt.configuration.style,
+    likeCount: dbArt.likeCount
 }));
 
 // Define the PrismaArtFromDTOSchema with transform
@@ -103,5 +106,21 @@ export const PrismaArtFromDTOSchema = ArtWorkSchema.transform((dto) => ({
     },
     userAvatar: dto.userAvatar,
     userName: dto.userName,
-    isAuthor: dto.isAuthor
+    isAuthor: dto.isAuthor,
+    likeCount: dto.likeCount
+}));
+
+// Add a schema for transforming frontend data to backend format
+export const BackendArtSchema = ArtWorkSchema.transform((frontendArt) => ({
+    configuration: {
+        colorA: frontendArt.colorA,
+        colorB: frontendArt.colorB,
+        stripeCount: frontendArt.stripeCount,
+        style: frontendArt.style
+    },
+    authorId: frontendArt.authorId,
+    userAvatar: frontendArt.userAvatar,
+    userName: frontendArt.userName,
+    isAuthor: frontendArt.isAuthor,
+    likeCount: frontendArt.likeCount
 }));

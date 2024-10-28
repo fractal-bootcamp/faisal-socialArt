@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ArtType, generateRandomArt } from '@/services/artService';
+import type { ArtWork } from '../../../common/types';
+import { generateRandomArt } from '@/services/artService';
 import { toast } from 'sonner';
 import { useAuth } from './useAuth';
 import { useClerk } from '@clerk/clerk-react';
@@ -14,32 +15,46 @@ import {
 export const useArtFeed = () => {
     console.log('Initializing useArtFeed hook');
 
-    const [feedItems, setFeedItems] = useState<ArtType[]>([]);
-    const [editingArt, setEditingArt] = useState<ArtType | null>(null);
-    const { isAuthenticated, user } = useAuth();
+    const [feedItems, setFeedItems] = useState<ArtWork[]>([]);
+    const [editingArt, setEditingArt] = useState<ArtWork | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const { isAuthenticated, user, isLoaded } = useAuth();
     const client = useClerk();
     const isArtworkOwner = useIsArtworkOwner(client);
 
-    console.log('Initial state:', { feedItems, editingArt, isAuthenticated, user });
+    console.log('Initial state:', { feedItems, editingArt, isAuthenticated, user, isLoaded });
 
     useEffect(() => {
         console.log('useEffect triggered for fetching art');
         const fetchArt = async () => {
             try {
-                console.log('Fetching art feed');
+                setIsLoading(true);
+                if (!isLoaded) {
+                    console.log('Not loaded, returning');
+                    return;
+                }
+
+                console.log('Fetching art feed with auth status:', isAuthenticated);
                 const fetchedArtItems = await fetchArtFeed();
                 console.log('Fetched art items:', fetchedArtItems);
                 setFeedItems(fetchedArtItems);
             } catch (error) {
                 console.error('Error fetching art:', error);
                 toast.error('Failed to load art feed');
+            } finally {
+                setIsLoading(false);
             }
         };
         fetchArt();
-    }, []);
+    }, [isLoaded, isAuthenticated]);
 
     // Function to open editor with new generated art
     const handleGenerateNewArt = () => {
+        if (!isLoaded) {
+            toast.error('Please wait while we load the art feed');
+            return;
+        }
+
         if (!isAuthenticated) {
             toast.error('Please sign in to start Jammin art');
             return;
@@ -57,15 +72,36 @@ export const useArtFeed = () => {
     };
 
     // Separate function to handle publishing
-    const handlePublishArt = async (artToPublish: ArtType) => {
+    const handlePublishArt = async (artToPublish: ArtWork) => {
+        // 1. Create optimistic update
+        const tempId = Date.now().toString();
+        const tempArt = {
+            ...artToPublish,
+            id: tempId,
+            userAvatar: user?.imageUrl || '',
+            userName: user?.username || '',
+            authorId: user?.id || '',
+            isAuthor: true
+        };
+        setFeedItems(prev => [tempArt, ...prev]);
+
         try {
-            const createdArt = await createArt(artToPublish);
-            setFeedItems(prevItems => [createdArt, ...prevItems]);
+            // 2. Make API call
+            const response = await createArt(artToPublish);
+
+            // 3. Update with real data immediately when available
+            setFeedItems(prev => prev.map(item =>
+                item.id === tempId ? response : item
+            ));
+
+            // Clear editing state
             setEditingArt(null);
             toast.success('Art published successfully!');
         } catch (error) {
-            console.error('Error publishing art:', error);
+            // 4. Handle errors by removing temp item
+            setFeedItems(prev => prev.filter(item => item.id !== tempId));
             toast.error('Failed to publish art. Please try again.');
+            console.error('Error publishing art:', error);
         }
     };
 
@@ -99,7 +135,7 @@ export const useArtFeed = () => {
     };
 
     // Handle editing art
-    const handleEdit = async (updatedArt: Partial<ArtType>) => {
+    const handleEdit = async (updatedArt: Partial<ArtWork>) => {
         console.log('handleEdit called with:', updatedArt);
         if (!isAuthenticated) {
             console.log('User not authenticated');
@@ -118,7 +154,7 @@ export const useArtFeed = () => {
             return;
         }
         try {
-            const updatedFields: ArtType = {
+            const updatedFields: ArtWork = {
                 ...originalArt,
                 ...updatedArt,
             };
@@ -139,7 +175,7 @@ export const useArtFeed = () => {
     };
 
     // Add a function to check if user can edit/delete an artwork
-    const canModifyArt = (art: ArtType): boolean => {
+    const canModifyArt = (art: ArtWork): boolean => {
         // Check if the user is authenticated and owns the artwork
         const result = isAuthenticated && isArtworkOwner(art);
         console.log('canModifyArt called for:', art, 'Result:', result);
@@ -157,6 +193,8 @@ export const useArtFeed = () => {
         handleEdit,
         canModifyArt,
         isAuthenticated,
-        user
+        user,
+        isLoaded,
+        isLoading
     };
 }

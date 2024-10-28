@@ -178,9 +178,9 @@ const FeedPost: React.FC<FeedPostProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={handleLike}
-                            className={`p-1 sm:p-2 ${isLiked ? "text-red-500 hover:text-red-600" : ""}`}
+                            className={`p-1 sm:p-2 ${isLiked || likesCount > 0 ? "text-red-500 hover:text-red-600" : ""}`}
                         >
-                            <Heart className="h-6 w-6 sm:h-8 sm:w-8" fill={isLiked ? "currentColor" : "none"} />
+                            <Heart className="h-6 w-6 sm:h-8 sm:w-8" fill={isLiked || likesCount > 0 ? "currentColor" : "none"} />
                         </Button>
                         <span className="ml-1 sm:ml-2 text-sm sm:text-base text-gray-500">
                             {likesCount}

@@ -2,7 +2,7 @@ import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import { PrismaClient } from '@prisma/client';
 import { clerkMiddleware, requireAuth, clerkClient, getAuth } from '@clerk/express';
-import { getArtFeed, getPrismaArtFromDTO } from './services/artService';
+import { getArtFeed, getPrismaArtFromDTO, getArtDTO } from './services/artService';
 import { ArtWorkSchema } from '../../common/schemas';
 import { authMiddleware, AuthenticatedRequest } from './middleware';
 
@@ -217,30 +217,45 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
     console.log('Fetching user profile...');
     try {
         const { userName } = req.params;
-        console.log(`Attempting to fetch profile for user: ${userName}`);
 
-        console.log('Querying database for user profile...');
+        // First find the Clerk user by username
+        const clerkUsers = await clerkClient.users.getUserList({
+            username: [userName] // getUserList expects array of usernames
+        });
+
+        // Check if any users were found
+        if (!clerkUsers.data || clerkUsers.data.length === 0) {
+            res.status(404).json({ error: 'User not found.' });
+            return;
+        }
+        // Get user profile with associated artworks, ordered by creation date
         const userProfile = await prisma.user.findUnique({
-            where: { username: userName },
+            where: { clerkId: clerkUsers.data[0].id }, // Fixed: using clerkUsers.data instead of clerkUser
             include: {
                 artWorks: {
-                    orderBy: { createdAt: 'desc' }
+                    orderBy: { createdAt: 'desc' },
+                    include: {
+                        likes: true,
+                        author: true
+                    }
                 }
             }
         });
 
         if (!userProfile) {
-            console.log(`User not found: ${userName}`);
             res.status(404).json({ error: 'User not found.' });
             return;
         }
 
-        const { id, username, artWorks } = userProfile;
+        // Transform the data using getArtDTO
+        const artWorksWithLikes = userProfile.artWorks.map(art => ({
+            ...getArtDTO(art),
+            likeCount: art.likes.length
+        }));
 
-        console.log('User profile fetched:', { id, username, artWorksCount: artWorks.length });
-        res.status(200).json({ id, username, artWorks });
+        res.status(200).json(artWorksWithLikes);
     } catch (error) {
-        console.error('Error fetching user profile and artwork:', error);
+        console.error('Error fetching user profile:', error);
         res.status(500).json({ error: 'Internal server error.' });
     }
 });
