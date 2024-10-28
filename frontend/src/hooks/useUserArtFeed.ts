@@ -20,8 +20,10 @@ export const useUserArtFeed = (userName: string) => {
                     return;
                 }
 
-                const fetchedArtItems = await fetchUserArtwork(userName);
+                const normalizedUserName = userName.replace(/\s+/g, '');
+                const fetchedArtItems = await fetchUserArtwork(normalizedUserName);
                 setFeedItems(fetchedArtItems);
+                console.log('Fetched USER ART FAISAL items:', fetchedArtItems);
             } catch (error) {
                 console.error('Error fetching user art:', error);
                 toast.error('Failed to load user artwork');
