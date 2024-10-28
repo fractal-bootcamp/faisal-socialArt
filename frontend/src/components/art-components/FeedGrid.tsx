@@ -4,27 +4,31 @@ import ArtEditor from './ArtEditor';
 import FeedPost from './FeedPost';
 import { Toaster } from 'sonner';
 import { useArtFeed } from '@/hooks/useArtFeed';
+import { ArtWork } from '../../../../common/types';
 
 interface FeedGridProps {
     userName: string;
     userAvatar: string;
     isProfilePage?: boolean;
+    handleDeleteArt: (id: string) => void;
+    onEditArt: (art: Partial<ArtWork>) => void;
+    feedItems: ArtWork[];
 }
 
 const FeedGrid: React.FC<FeedGridProps> = ({
     userName,
     userAvatar,
     isProfilePage = true,
+    handleDeleteArt,
+    onEditArt,
+    feedItems
 }) => {
     const {
-        feedItems,
-        editingArt,
-        setEditingArt,
         handleGenerateNewArt,
         handlePublishArt,
-        handleDelete,
-        handleEdit,
         canModifyArt,
+        editingArt,
+        setEditingArt,
     } = useArtFeed();
 
     return (
@@ -45,8 +49,8 @@ const FeedGrid: React.FC<FeedGridProps> = ({
                         authorId={item.authorId}
                         isAuthor={canModifyArt(item)}
                         onLike={() => { }} // Placeholder for like functionality
-                        onEdit={handleEdit}
-                        onDelete={() => handleDelete(item.id || '')}
+                        onEdit={onEditArt}
+                        onDelete={() => handleDeleteArt(item.id || '')}
                         displayAsGrid={true}
                         isProfilePage={isProfilePage}
                     />

@@ -21,7 +21,19 @@ const Feed: React.FC<FeedProps> = ({
         handleDelete,
         handleEdit,
         canModifyArt,
+        isLoaded,
+        isLoading,
     } = useArtFeed();
+
+    if (!isLoaded && !isLoading) {
+        // Return centered loading spinner with text
+        return (
+            <div className="h-screen w-full flex flex-col items-center justify-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-gray-900 mb-4"></div>
+                <div>Loading...</div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex-grow overflow-y-auto p-6">

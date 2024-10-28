@@ -1,20 +1,25 @@
 import React from 'react';
 import { SidebarInset } from '../ui/sidebar';
-import { ArtFeed } from '@/services/artService';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import FeedGrid from '../art-components/FeedGrid';
+import { useUserArtFeed } from '@/hooks/useUserArtFeed';
+import { useArtFeed } from '@/hooks/useArtFeed';
 
 interface ProfilePageContentProps {
-    userArts?: ArtFeed;
     userName: string;
     userAvatar?: string;
 }
 
 const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
-    userArts = [],
     userName,
     userAvatar,
 }) => {
+    // Get user's artwork and loading state
+    const { feedItems, isLoading } = useUserArtFeed(userName);
+
+    // Get edit and delete handlers
+    const { handleDelete, handleEdit } = useArtFeed();
+
     return (
         <SidebarInset className="flex-1">
             <main className="flex flex-col items-center justify-start h-full w-full overflow-auto p-8">
@@ -27,14 +32,18 @@ const ProfilePageContent: React.FC<ProfilePageContentProps> = ({
                         <h1 className="text-3xl font-bold">{userName}'s Gallery</h1>
                     </div>
 
-                    {/* Display the feed as a grid for the user's profile page */}
-                    <FeedGrid
-                        initialItems={userArts}
-                        userName={userName}
-                        userAvatar={userAvatar || ''}
-                        handleDeleteArt={() => { }}
-                        onEditArt={() => { }}
-                    />
+                    {isLoading ? (
+                        <div className="text-center py-8">Loading gallery...</div>
+                    ) : (
+                        <FeedGrid
+                            userName={userName}
+                            userAvatar={userAvatar || ''}
+                            isProfilePage={true}
+                            handleDeleteArt={handleDelete}
+                            onEditArt={handleEdit}
+                            feedItems={feedItems}
+                        />
+                    )}
                 </div>
             </main>
         </SidebarInset>

@@ -60,7 +60,7 @@ export function getPrismaArtFromDTO(dto: ArtWork): Prisma.ArtWorkCreateInput {
 }
 
 // DTO = Data Transfer Object
-function getArtDTO(art: PrismaArtWork): ArtWork {
+export function getArtDTO(art: PrismaArtWork): ArtWork {
     // Convert the configuration JsonValue to ArtConfigurationInDB
     const config = art.configuration as ArtConfigurationInDB;
 
@@ -85,10 +85,14 @@ export async function getArtFeed() {
     const dbArts = await prisma.artWork.findMany({
         orderBy: { createdAt: 'desc' },
         include: {
-            author: true
+            author: true,
+            likes: true
         }
     });
 
-    const artFeed = dbArts.map(getArtDTO);
+    const artFeed = dbArts.map(dbArt => ({
+        ...getArtDTO(dbArt),
+        likeCount: dbArt.likes.length
+    }));
     return artFeed;
 }

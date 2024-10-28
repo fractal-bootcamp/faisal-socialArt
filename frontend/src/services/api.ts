@@ -118,14 +118,22 @@ export const createArt = async (artData: ArtType) => {
     return apiCall<ArtWork>('post', '/art-feed', artData, ArtWorkSchema, 'Failed to create art.');
 };
 
-export const updateArt = async (id: string, artData: Partial<ArtType>) => {
+export const updateArt = async (id: string, artData: Partial<ArtWork>) => {
     console.log(`Updating art with id ${id}:`, artData);
     const token = await getAuthToken();
     if (!token) {
         console.error('No authentication token');
         throw new Error('Authentication required');
     }
-    return apiCall<ArtWork>('put', `/art-feed/${id}`, artData, ArtWorkSchema, 'Failed to update art.');
+
+    // The data should already be in the correct format from handleEdit
+    return apiCall<ArtWork>(
+        'put',
+        `/art-feed/${id}`,
+        artData,
+        ArtWorkSchema,
+        'Failed to update art.'
+    );
 };
 
 export const updateLike = async (id: string, isLiked: boolean) => {
