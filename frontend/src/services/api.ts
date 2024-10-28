@@ -168,10 +168,12 @@ export const fetchArtFeed = () => {
     return apiCall<ArtWork[]>('get', '/art-feed', undefined, z.array(ArtWorkSchema), 'Failed to fetch art feed.');
 }
 
-export const fetchUserArtwork = (userName: string) => {
-    console.log(`Fetching artwork for user: ${userName}`);
-    return apiCall<ArtWork[]>('get', `/profile/${userName}`, undefined, z.array(ArtWorkSchema), 'Failed to fetch user artwork.');
-}
+export const fetchUserArtwork = async (userName: string): Promise<ArtWork[]> => {
+    // Normalize the username by removing spaces and converting to lowercase
+    const normalizedUserName = userName.replace(/\s+/g, '');
+    const response = await apiCall<ArtWork[]>('get', `/profile/${normalizedUserName}`);
+    return response;
+};
 
 // Add a function to check if user is authenticated
 export const isAuthenticated = async (): Promise<boolean> => {

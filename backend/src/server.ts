@@ -107,28 +107,9 @@ app.post("/api/art-feed/:id/like", clerkMiddleware(), authMiddleware, async (req
     const { isLiked } = req.body;
     console.log(`User: ${user.username}, ArtworkID: ${artWorkId}, isLiked: ${isLiked}`);
 
-    // Validate artwork exists
-    console.log('Validating artwork...');
-    const artwork = await prisma.artWork.findUnique({ where: { id: artWorkId } });
-
-    if (!artwork) {
-        console.log('Artwork not found.');
-        res.status(404).json({ error: 'Artwork not found.' });
-        return;
-    }
-    console.log('Artwork found:', artwork);
-
-    if (isLiked) {
-        console.log('Adding like...');
-        await prisma.like.create({
-            data: {
-                userId: user.clerkId,
-                artWorkId: artWorkId
-            }
-        });
-    } else {
-        console.log('Removing like...');
-        await prisma.like.delete({
+    try {
+        // First check if the like already exists
+        const existingLike = await prisma.like.findUnique({
             where: {
                 userId_artWorkId: {
                     userId: user.clerkId,
@@ -136,16 +117,49 @@ app.post("/api/art-feed/:id/like", clerkMiddleware(), authMiddleware, async (req
                 }
             }
         });
-    }
 
-    // Fetch and update artwork with new like count
-    console.log('Updating like count...');
-    const updatedArtwork = await prisma.artWork.findUnique({
-        where: { id: artWorkId },
-        include: { likes: true }
-    });
-    console.log('Updated artwork:', updatedArtwork);
-    res.status(200).json({ likeCount: updatedArtwork?.likes.length || 0 });
+        if (isLiked && !existingLike) {
+            // Create like if it doesn't exist
+            await prisma.like.create({
+                data: {
+                    userId: user.clerkId,
+                    artWorkId: artWorkId
+                }
+            });
+        } else if (!isLiked && existingLike) {
+            // Delete like if it exists
+            await prisma.like.delete({
+                where: {
+                    userId_artWorkId: {
+                        userId: user.clerkId,
+                        artWorkId: artWorkId
+                    }
+                }
+            });
+        }
+
+        // Fetch updated artwork with like count and user's like status
+        const updatedArtwork = await prisma.artWork.findUnique({
+            where: { id: artWorkId },
+            include: {
+                likes: true
+            }
+        });
+
+        if (!updatedArtwork) {
+            return res.status(404).json({ error: 'Artwork not found.' });
+        }
+
+        const isLikedByUser = updatedArtwork.likes.some(like => like.userId === user.clerkId);
+
+        res.status(200).json({
+            likeCount: updatedArtwork.likes.length,
+            isLikedByUser
+        });
+    } catch (error) {
+        console.error('Error handling like:', error);
+        res.status(500).json({ error: 'Failed to update like status' });
+    }
 });
 
 app.put('/api/art-feed/:id', clerkMiddleware(), authMiddleware, async (req: Request, res: Response) => {
@@ -217,20 +231,17 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
     console.log('Fetching user profile...');
     try {
         const { userName } = req.params;
+        // Normalize the username to match the database
+        const normalizedUserName = userName.toLowerCase();
 
-        // First find the Clerk user by username
-        const clerkUsers = await clerkClient.users.getUserList({
-            username: [userName] // getUserList expects array of usernames
-        });
-
-        // Check if any users were found
-        if (!clerkUsers.data || clerkUsers.data.length === 0) {
-            res.status(404).json({ error: 'User not found.' });
-            return;
-        }
-        // Get user profile with associated artworks, ordered by creation date
-        const userProfile = await prisma.user.findUnique({
-            where: { clerkId: clerkUsers.data[0].id }, // Fixed: using clerkUsers.data instead of clerkUser
+        // First find the user in the database by username
+        const userProfile = await prisma.user.findFirst({
+            where: {
+                username: {
+                    equals: normalizedUserName,
+                    mode: 'insensitive' // This makes the search case-insensitive
+                }
+            },
             include: {
                 artWorks: {
                     orderBy: { createdAt: 'desc' },
@@ -243,16 +254,12 @@ app.get('/api/profile/:userName', async (req: Request, res: Response) => {
         });
 
         if (!userProfile) {
+            console.log(`User not found: ${userName}`);
             res.status(404).json({ error: 'User not found.' });
             return;
         }
 
-        // Transform the data using getArtDTO
-        const artWorksWithLikes = userProfile.artWorks.map(art => ({
-            ...getArtDTO(art),
-            likeCount: art.likes.length
-        }));
-
+        const artWorksWithLikes = userProfile.artWorks.map(art => getArtDTO(art));
         res.status(200).json(artWorksWithLikes);
     } catch (error) {
         console.error('Error fetching user profile:', error);

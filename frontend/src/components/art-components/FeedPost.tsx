@@ -18,10 +18,11 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
 
 
 interface FeedPostProps {
-    art: ArtType & { likeCount?: number };
+    art: ArtType & { likeCount?: number, isLikedByUser?: boolean };
     userAvatar: string;
     userName: string;
     authorId: string;
@@ -44,39 +45,49 @@ const FeedPost: React.FC<FeedPostProps> = ({
     onDelete,
     displayAsGrid = false,
     isProfilePage = false,
-    userId // Add this prop
 }) => {
     const [isEditingState, setIsEditingState] = useState(false);
-    const [isLiked, setIsLiked] = useState(false);
-    const [likesCount, setLikesCount] = useState(art.likeCount || 0);
+    const [isLiked, setIsLiked] = useState(art.isLikedByUser ?? false);
+    const [likesCount, setLikesCount] = useState(art.likeCount ?? 0);
     const [currentArt, setCurrentArt] = useState(art);
+    const { isAuthenticated, isLoaded } = useAuth();
 
     const handleEdit = () => {
         setIsEditingState(true);
     };
 
     const handleLike = async () => {
-        if (!userId) {
-            toast.error('You must be logged in to like artworks');
+        // First check if everything is loaded
+        if (!isLoaded) {
+            toast.error('Please wait while we load your session');
+            return;
+        }
+
+        // Then check authentication
+        if (!isAuthenticated) {
+            toast.error('Please sign in to like artworks');
             return;
         }
 
         const newIsLiked = !isLiked;
+
+        // Optimistic update
         setIsLiked(newIsLiked);
         setLikesCount(prevCount => newIsLiked ? prevCount + 1 : prevCount - 1);
+
         try {
-            // Update like status and get the new like count
+            // Make the API call
             const response = await updateLike(art.id || '', newIsLiked);
+
+            // Update with actual server count
             setLikesCount(response.likeCount);
-            toast.success(newIsLiked ? 'Liked!' : 'Unliked!');
+            toast.success(newIsLiked ? 'Artwork liked!' : 'Artwork unliked!');
         } catch (error) {
-            // Revert the like status and count if the update fails
+            // Revert optimistic update on error
             setIsLiked(!newIsLiked);
             setLikesCount(prevCount => !newIsLiked ? prevCount + 1 : prevCount - 1);
-            setIsLiked(!newIsLiked);
-            setLikesCount(prevCount => !newIsLiked ? prevCount + 1 : prevCount - 1);
-            toast.error('Failed to update like status. Please try again.');
             console.error('Error updating like:', error);
+            toast.error('Failed to update like status. Please try again.');
         }
     };
 
